@@ -29,45 +29,45 @@
             <div class="col-md-3">
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
-                        <h5 class="card-title">Film</h5>
+                        <h5 class="card-title">Film Bulan ini</h5>
                         <h2 class="text-primary">15</h2>
-                        <p class="text-muted">Total Film</p>
+                        <p class="text-muted">Film</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
-                        <h5 class="card-title">Pengguna</h5>
+                        <h5 class="card-title">Total Film</h5>
                         <h2 class="text-primary">1.234</h2>
-                        <p class="text-muted">Total Pengguna</p>
+                        <p class="text-muted">Film</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
-                        <h5 class="card-title">Review</h5>
+                        <h5 class="card-title">Review Bulan ini</h5>
                         <h2 class="text-primary">1.500</h2>
-                        <p class="text-muted">Total Review</p>
+                        <p class="text-muted">Review</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
-                        <h5 class="card-title">Pengguna</h5>
+                        <h5 class="card-title">Total Review</h5>
                         <h2 class="text-primary">1.234</h2>
-                        <p class="text-muted">Total Pengguna</p>
+                        <p class="text-muted">Review</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
-                        <h5 class="card-title">Pengguna</h5>
-                        <h2 class="text-primary">1.234</h2>
-                        <p class="text-muted">Total Pengguna</p>
+                        <h5 class="card-title">Total Pengguna</h5>
+                        <h2 class="text-primary">2.456</h2>
+                        <p class="text-muted">Pengguna</p>
                     </div>
                 </div>
             </div>
