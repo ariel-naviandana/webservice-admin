@@ -13,7 +13,43 @@
 
     <div class="container mt-5">
         <h1 class="mb-4">Manajemen Film</h1>
+        <hr>
 
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Judul</th>
+                    <th class="col-3">Sinopsis</th>
+                    <th>Tahun Rilis</th>
+                    <th>Durasi</th>
+                    <th>Poster</th>
+                    <th>Direktor</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($films as $film)
+                <tr>
+                    <td>{{$film['id']}}</td>
+                    <td>{{$film['title']}}</td>
+                    <td>{{$film['synopsis']}}</td>
+                    <td>{{$film['release_year']}}</td>
+                    <td>{{$film['duration']}}</td>
+                    <td>{{$film['poster_url']}}</td>
+                    <td>{{$film['director']}}</td>
+                    <td>
+                        <a href="" class="btn btn-primary">Edit</a>
+                        <a href="" class="btn btn-danger">Hapus</a>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Data tidak ada</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
