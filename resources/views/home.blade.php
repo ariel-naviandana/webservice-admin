@@ -39,7 +39,7 @@
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
                         <h5 class="card-title">Total Film</h5>
-                        <h2 class="text-primary">1.234</h2>
+                        <h2 class="text-primary">{{$totalFilm}}</h2>
                         <p class="text-muted">Film</p>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
                         <h5 class="card-title">Total Review</h5>
-                        <h2 class="text-primary">1.234</h2>
+                        <h2 class="text-primary">{{$totalReview}}</h2>
                         <p class="text-muted">Review</p>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
                         <h5 class="card-title">Total Pengguna</h5>
-                        <h2 class="text-primary">2.456</h2>
+                        <h2 class="text-primary">{{$totalUser}}</h2>
                         <p class="text-muted">Pengguna</p>
                     </div>
                 </div>
@@ -88,18 +88,10 @@
                         <th>Durasi</th>
                         <th>Poster</th>
                         <th>Direktor</th>
+                        <th>Rating Average</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>0</td>
-                        <td>La La Land</td>
-                        <td>When Sebastian, a pianist, and Mia, an actress, follow their passion and achieve success in their respective fields, they find themselves torn between their love for each other and their careers.</td>
-                        <td>2016</td>
-                        <td>2h 8m</td>
-                        <td>poster</td>
-                        <td>Damien Chazelle</td>
-                    </tr>
                     @forelse ($films as $film)
                         <tr>
                             <td>{{ $film['id']}}</td>
@@ -107,11 +99,13 @@
                             <td>{{ $film['synopsis']}}</td>
                             <td>{{ $film['release_year']}}</td>
                             <td>{{ $film['duration']}} Menit</td>
-                            <td>poster</td>
                             <td>{{ $film['director']}}</td>
+                            <td>{{ $film['rating_avg']}}</td>
                         </tr>
                     @empty
-
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Data tidak ada</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>

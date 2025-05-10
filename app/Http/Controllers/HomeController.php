@@ -11,12 +11,28 @@ class HomeController extends Controller
 
     public function index()
     {
-        $response = Http::get("http://localhost:8000/api/films");
-        if ($response->successful()) {
-            $films = $response->json();
-            return view('home', compact('films'));
-        } else {
-            return view('home');
+
+        $films = $users = $reviews = [];
+        $totalFilm = $totalUsers = $totalReviews = 0;
+
+        $responseFilm = Http::get("{$this->apiBaseUrl}/films");
+        if ($responseFilm->successful()) {
+            $films = $responseFilm->json();
+            $totalFilm = count($films);
         }
+
+        $responseUser = Http::get("{$this->apiBaseUrl}/users");
+        if($responseUser->successful()) {
+            $users = $responseUser->json();
+            $totalUser = count($users);
+        }
+
+        $responseReview = Http::get("{$this->apiBaseUrl}/reviews");
+        if ($responseReview->successful()) {
+            $reviews = $responseReview->json();
+            $totalReview = count($reviews);
+        }
+
+        return view('home', compact('films', 'totalFilm', 'totalUser', 'totalReview'));
     }
 }
