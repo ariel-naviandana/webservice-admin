@@ -9,19 +9,26 @@ class UsersManagementController extends Controller
 {
     private $apiBaseUrl = 'http://localhost:8000/api';
 
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil data user dari API
-        $response = Http::get("http://localhost:8000/api/users");
+        $response = Http::get("{$this->apiBaseUrl}/users");
 
         if ($response->successful()) {
             $users = $response->json();
-            return view('users', compact('users'));
-        } else {
-            return view('users')->with('message', 'Gagal memuat data user.');
-        }
-    }
+            $editingUser = null;
 
+            if ($request->has('edit_id')) {
+                $userRes = Http::get("{$this->apiBaseUrl}/users/{$request->edit_id}");
+                if ($userRes->successful()) {
+                    $editingUser = $userRes->json();
+                }
+            }
+
+            return view('users', compact('users', 'editingUser'));
+        }
+
+        return view('users')->with('message', 'Gagal memuat data user.');
+    }
 
     public function update(Request $request, $id)
     {
@@ -33,10 +40,10 @@ class UsersManagementController extends Controller
         $response = Http::put("{$this->apiBaseUrl}/users/{$id}", $data);
 
         if ($response->successful()) {
-            return redirect()->route('users')->with('message', 'User berhasil diperbarui.');
+            return redirect()->route('users.index')->with('message', 'User berhasil diperbarui.');
         }
 
-        return redirect()->route('users')->with('message', 'Gagal memperbarui user.');
+        return redirect()->route('users.index')->with('message', 'User berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -44,10 +51,10 @@ class UsersManagementController extends Controller
         $response = Http::delete("{$this->apiBaseUrl}/users/{$id}");
 
         if ($response->successful()) {
-            return redirect()->route('users')->with('message', 'User berhasil dihapus.');
+            return redirect()->route('users.index')->with('message', 'User berhasil dihapus.');
         }
 
-        return redirect()->route('users')->with('message', 'Gagal menghapus user.');
+        return redirect()->route('users.index')->with('message', 'Gagal menghapus user.');
     }
 
     // public function edit($id)
