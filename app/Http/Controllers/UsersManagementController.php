@@ -56,16 +56,4 @@ class UsersManagementController extends Controller
 
         return redirect()->route('users.index')->with('message', 'Gagal menghapus user.');
     }
-
-    // public function edit($id)
-    // {
-    //     $response = Http::get("{$this->apiBaseUrl}/users/{$id}");
-
-    //     if ($response->successful()) {
-    //         $user = $response->json();
-    //         return view('users.edit', compact('user'));
-    //     }
-
-    //     return redirect()->route('users.index')->with('message', 'Gagal mengambil data user.');
-    // }
 }
