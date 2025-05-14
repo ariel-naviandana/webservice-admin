@@ -33,6 +33,7 @@
     <title>Management Cast</title>
 </head>
 <body>
+@include('navbar')
 <h2>Manajemen Cast</h2>
 <div class="table-container">
     <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#castModal">Tambah</button>
