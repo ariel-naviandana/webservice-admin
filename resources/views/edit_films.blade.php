@@ -24,24 +24,26 @@
             </div>
             <div class="mb-3">
                 <label for="title" class="form-label">Synopsis</label>
-                <input type="text" class="form-control" name="title" id="title" value="{{old('synopsis', $film['synopsis'])}}">
+                <input type="text" class="form-control" name="synopsis" id="synopsis" value="{{old('synopsis', $film['synopsis'])}}">
             </div>
             <div class="mb-3">
                 <label for="title" class="form-label">Release Year</label>
-                <input type="text" class="form-control" name="title" id="title" value="{{old('release_year', $film['release_year'])}}">
+                <input type="text" class="form-control" name="release_year" id="release_year" value="{{old('release_year', $film['release_year'])}}">
             </div>
             <div class="mb-3">
                 <label for="title" class="form-label">Film Duration</label>
-                <input type="text" class="form-control" name="title" id="title" value="{{old('duration', $film['duration'])}}">
+                <input type="text" class="form-control" name="duration" id="duration" value="{{old('duration', $film['duration'])}}">
             </div>
             <div class="mb-3">
                 <label for="title" class="form-label">Poster</label>
-                <input type="text" class="form-control" name="title" id="title" value="{{old('poster_url', $film['poster_url'])}}">
+                <input type="text" class="form-control" name="poster_url" id="poster_url" value="{{old('poster_url', $film['poster_url'])}}">
             </div>
             <div class="mb-3">
                 <label for="title" class="form-label">Directior</label>
-                <input type="text" class="form-control" name="title" id="title" value="{{old('director', $film['director'])}}">
+                <input type="text" class="form-control" name="director" id="director" value="{{old('director', $film['director'])}}">
             </div>
+
+            {{-- TODO Tambahin dropdown cast dan genre --}}
             <button type="submit" class="btn btn-primary mb-3">Submit</button><br>
             <a href="{{route('films.index')}}" class="btn btn-secondary">Kembali</a>
         </form>
