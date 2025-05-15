@@ -18,6 +18,9 @@ Route::put('/users/{id}', [UsersManagementController::class, 'update'])->name('u
 Route::delete('/users/{id}', [UsersManagementController::class, 'destroy'])->name('users.destroy');
 
 Route::get('/films', [FilmManagementController::class, 'index'])->name('films.index');
+Route::get('/films/{id}/edit', [FilmManagementController::class, 'edit'])->name('films.edit');
+Route::put('/films/{id}', [FilmManagementController::class, 'update'])->name('films.update');
+Route::delete('/films/{id}', [FilmManagementController::class, 'delete'])->name('films.delete');
 
 Route::get('/genre', function () {
     return view('genre');
