@@ -86,7 +86,6 @@
                         <th class="col-4">Sinopsis</th>
                         <th>Tahun Rilis</th>
                         <th>Durasi</th>
-                        <th>Poster</th>
                         <th>Direktor</th>
                         <th>Rating Average</th>
                     </tr>
