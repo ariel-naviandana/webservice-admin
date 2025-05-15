@@ -15,7 +15,7 @@
         <h1 class="mb-4">Manajemen Film</h1>
         <hr>
         <div class="d-grid gap-2">
-            <a href="" class="btn btn-lg btn-primary mb-4">Tambah Film</a>
+            <a href="{{route('films.add')}}" class="btn btn-lg btn-primary mb-4">Tambah Film</a>
         </div>
 
         <table class="table table-striped table-hover">
@@ -43,7 +43,7 @@
                     <td>{{$film['director']}}</td>
                     <td>
                         <a href="{{route('films.edit', $film['id'])}}" class="btn btn-primary">Edit</a>
-                        <a href="" class="btn btn-danger">Hapus</a>
+                        <a href="{{route('films.destroy', $film['id'])}}" class="btn btn-danger">Hapus</a>
                     </td>
                 </tr>
                 @empty
