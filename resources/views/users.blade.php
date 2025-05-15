@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen User</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 
@@ -40,7 +41,7 @@
                         <td>{{ $user['email'] }}</td>
                         <td>{{ $user['role'] }}</td>
                         <td>
-                            <a href="/users/{{ $user['id'] }}" method="PUT" class="btn btn-sm btn-primary">Edit</a>
+                            <a href="{{ route('users.index', ['edit_id' => $user['id']]) }}" class="btn btn-sm btn-primary">Edit</a>
                             <form action="/users/{{ $user['id'] }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus user ini?')">
                                 @csrf
                                 @method('DELETE')
@@ -57,10 +58,54 @@
         </table>
     </div>
 
+    <!-- Modal Edit User -->
+    @if(isset($editingUser))
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="POST" action="{{ isset($editingUser) ? route('users.update', $editingUser['id']) : '#' }}">
+                @csrf
+                @method('PUT')
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Role User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="editUserName" class="form-label">Name</label>
+                            <input type="text" id="editUserName" class="form-control" value="{{ $editingUser['name'] ?? '' }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserEmail" class="form-label">Email</label>
+                            <input type="email" id="editUserEmail" class="form-control" value="{{ $editingUser['email'] ?? '' }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserRole" class="form-label">Role</label>
+                            <select id="editUserRole" name="role" class="form-select">
+                                <option value="admin" {{ isset($editingUser['role']) && $editingUser['role'] == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="user" {{ isset($editingUser['role']) && $editingUser['role'] == 'user' ? 'selected' : '' }}>User</option>
+                                <option value="critic" {{ isset($editingUser['role']) && $editingUser['role'] == 'critic' ? 'selected' : '' }}>Critic</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Simpan</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            var myModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+            myModal.show();
+        };
+    </script>
+    @endif
+
     <!-- Footer -->
     @include('footer')
-
-    <!-- Bootstrap Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

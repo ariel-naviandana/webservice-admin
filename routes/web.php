@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CastController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\UsersManagementController;
+use App\Http\Controllers\ReviewsManagementController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,3 +34,7 @@ Route::get('/cast', function () {
 
 Route::get('/admin/genres', [GenreController::class, 'index']);
 Route::get('admin/cast', [CastController::class, 'index']);
+
+Route::get('/reviews', [ReviewsManagementController::class, 'index'])->name('reviews.index');
+Route::put('/reviews/{id}', [ReviewsManagementController::class, 'update'])->name('reviews.update');
+Route::delete('/reviews/{id}', [ReviewsManagementController::class, 'destroy'])->name('reviews.destroy');
