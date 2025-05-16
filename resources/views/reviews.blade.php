@@ -82,17 +82,17 @@
                         </div>
                         <div class="mb-3">
                             <label for="rating" class="form-label">Rating</label>
-                            <input type="number" step="0.1" class="form-control" name="rating" value="{{ $editingReview['rating'] }}">
+                            <input type="number" step="0.1" class="form-control" name="rating" value="{{ $editingReview['rating'] }}" disabled>
                         </div>
                         <div class="mb-3">
                             <label for="comment" class="form-label">Komentar</label>
-                            <textarea class="form-control" name="comment" rows="3">{{ $editingReview['comment'] }}</textarea>
+                            <textarea class="form-control" name="comment" rows="3" disabled>{{ $editingReview['comment'] }} </textarea>
                         </div>
                         <div class="mb-3">
                             <label for="is_critic" class="form-label">Is Critic</label>
-                            <select name="is_critic" class="form-select">
-                                <option value="1" {{ $editingReview['is_critic'] ? 'selected' : '' }}>Yes</option>
-                                <option value="0" {{ !$editingReview['is_critic'] ? 'selected' : '' }}>No</option>
+                            <select name="is_critic" class="form-select" disabled>
+                                <option value="1" {{ $editingReview['is_critic'] ? 'selected' : '' }} >Yes</option>
+                                <option value="0" {{ !$editingReview['is_critic'] ? 'selected' : '' }} >No</option>
                             </select>
                         </div>
                     </div>
