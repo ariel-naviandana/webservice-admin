@@ -34,11 +34,11 @@
 <body>
 @include('navbar')
 <div class="container mt-5 ">
-    <h2>Manajemen Genre</h2>
+    <h1 class="mb-4">Manajemen Genre</h1>
     <div class="table-container">
         <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#genreCreateModal">Tambah</button>
-        <table class="table table-striped table-bordered">
-            <thead>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
             <tr>
                 <th>ID</th>
                 <th>Nama Genre</th>

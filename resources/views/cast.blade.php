@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <!-- Custom CSS -->
     <style>
         body {
@@ -12,11 +12,12 @@
             background-color: #f8f9fa;
         }
 
-        .table-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        .action-btn {
+            min-width: 70px;
+            height: 30px;
+            padding: 2px 8px;
+            margin-bottom: 10px;
+            font-size: 0.875rem;
         }
 
         .table thead {
@@ -35,11 +36,13 @@
 <body>
 @include('navbar')
 <div class="container mt-5">
-<h2>Manajemen Cast</h2>
+<h1 class="mb-4">Manajemen Cast</h1>
 <div class="table-container">
-    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#castModal">Tambah</button>
-    <table class="table table-striped table-bordered">
-        <thead>
+    <div class="d-flex justify-content-start mb-3">
+        <button id="btn-add" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#castModal">Tambah</button>
+    </div>
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
         <tr>
             <th>ID</th>
             <th>Name</th>
@@ -60,15 +63,11 @@
             <td>{{ $cast['created_at'] }}</td>
             <td>{{ $cast['updated_at'] }}</td>
             <td>
-                <button
-                    type="button"
-                    class="btn btn-info btn-sm"
-                    data-bs-toggle="modal"
-                    data-bs-target="#genreModal"
-{{--                    data-id="{{ $genre['id'] }}"--}}
-{{--                    data-name="{{ $genre['name'] }}"--}}
-                >Edit</button>
-                <button class="btn btn-danger btn-sm">Hapus</button>
+                <button type="button" class="btn btn-info btn-sm action-btn"
+                        data-bs-toggle="modal"
+                        data-bs-target="#genreModal">Edit</button>
+
+                <button class="btn btn-danger btn-sm action-btn">Hapus</button>
             </td>
         </tr>
         @endforeach
@@ -154,4 +153,3 @@
 @include('footer')
 </body>
 </html>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>

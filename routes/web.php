@@ -25,7 +25,7 @@ Route::put('/genres/store', [GenreController::class, 'store'])->name('genres.sto
 Route::delete('/genres/{id}', [GenreController::class, 'destroy'])->name('genres.destroy');
 
 Route::get('/casts', [CastController::class, 'index'])->name('casts.index');
-Route::put('/casts/store', [CastController::class, 'store'])->name('casts.store');
+Route::put('/casts/{id}', [CastController::class, 'store'])->name('casts.store');
 Route::delete('/casts/{id}', [CastController::class, 'destroy'])->name('casts.destroy');
 
 Route::get('/reviews', [ReviewsManagementController::class, 'index'])->name('reviews.index');
