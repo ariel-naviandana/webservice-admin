@@ -26,7 +26,7 @@
 
         <h2 class="mb-4">Statistik</h2>
         <div class="row g-4">
-            <div class="col-md-3">
+            {{-- <div class="col-md-3">
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
                         <h5 class="card-title">Film Bulan ini</h5>
@@ -34,8 +34,8 @@
                         <p class="text-muted">Film</p>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3">
+            </div> --}}
+            <div class="col-md-4">
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
                         <h5 class="card-title">Total Film</h5>
@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            {{-- <div class="col-md-3">
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
                         <h5 class="card-title">Review Bulan ini</h5>
@@ -52,8 +52,8 @@
                         <p class="text-muted">Review</p>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3">
+            </div> --}}
+            <div class="col-md-4">
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
                         <h5 class="card-title">Total Review</h5>
@@ -62,7 +62,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-4">
                 <div class="card shadow-sm text-center">
                     <div class="card-body">
                         <h5 class="card-title">Total Pengguna</h5>
