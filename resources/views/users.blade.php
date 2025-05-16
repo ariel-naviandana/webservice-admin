@@ -1,4 +1,4 @@
-<!-- resources/views/users.blade.php -->
+    <!-- resources/views/users.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +42,7 @@
                         <td>{{ $user['role'] }}</td>
                         <td>
                             <a href="{{ route('users.index', ['edit_id' => $user['id']]) }}" class="btn btn-sm btn-primary">Edit</a>
-                            <form action="/users/{{ $user['id'] }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus user ini?')">
+                            <form  action="/users/{{ $user['id'] }}" method="POST"class="d-inline" onsubmit="return confirm('Yakin ingin menghapus user ini?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger">Hapus</button>

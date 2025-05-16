@@ -8,7 +8,7 @@
     <!-- Custom CSS -->
     <style>
         body {
-            padding: 30px;
+            padding: 0px;
             background-color: #f8f9fa;
         }
 
@@ -34,6 +34,7 @@
 </head>
 <body>
 @include('navbar')
+<div class="container mt-5">
 <h2>Manajemen Cast</h2>
 <div class="table-container">
     <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#castModal">Tambah</button>
@@ -50,18 +51,27 @@
         </tr>
         </thead>
         <tbody>
+        @foreach($casts as $cast)
         <tr>
-            <td>[id]</td>
-            <td>[nama]</td>
-            <td>[birth_of_date]</td>
-            <td>[url]</td>
-            <td>[created]</td>
-            <td>[updated]</td>
+            <td>{{ $cast['id'] }}</td>
+            <td>{{ $cast['name'] }}</td>
+            <td>{{ $cast['birth_date'] }}</td>
+            <td>{{ $cast['photo_url'] }}</td>
+            <td>{{ $cast['created_at'] }}</td>
+            <td>{{ $cast['updated_at'] }}</td>
             <td>
-                <button class="btn btn-info btn-sm">Edit</button>
+                <button
+                    type="button"
+                    class="btn btn-info btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#genreModal"
+{{--                    data-id="{{ $genre['id'] }}"--}}
+{{--                    data-name="{{ $genre['name'] }}"--}}
+                >Edit</button>
                 <button class="btn btn-danger btn-sm">Hapus</button>
             </td>
         </tr>
+        @endforeach
         </tbody>
     </table>
 </div>
@@ -71,7 +81,7 @@
 <div class="modal fade" id="castModal" tabindex="-1" aria-labelledby="castModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="/cast/store" method="POST">
+            <form action="/casts/store" method="POST">
 
                 @csrf
                 <div class="modal-header">
@@ -105,11 +115,43 @@
     </div>
 </div>
 
+{{-- Modal Edit Cast --}}
+<div class="modal fade" id="castEditModal" tabindex="-1" aria-labelledby="castEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="castEditForm" method="POST">
+                @csrf
+                <input type="hidden" name="_method" value="PUT">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="castEditModalLabel">Edit Cast</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit-name" class="form-label">Nama</label>
+                        <input type="text" class="form-control" id="edit-name" name="name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit-name" class="form-label">Tanggal lahir</label>
+                        <input type="date" class="form-control" id="edit-name" name="name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit-name" class="form-label">Foto</label>
+                        <input type="file" class="form-control" id="edit-name" name="name" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Perbarui</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+@include('footer')
 </body>
 </html>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
-
-<?php
-
-?>

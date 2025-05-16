@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <style>
         body {
-            padding: 30px;
+            padding: 0px;
             background-color: #f8f9fa;
         }
+
+        .container{
+
+        }
+
         .table-container {
             background: white;
             padding: 20px;
@@ -25,67 +29,125 @@
             font-size: 0.875rem;
         }
     </style>
-
     <title>Management Genre</title>
 </head>
 <body>
 @include('navbar')
-<h2>Manajemen Genre</h2>
-<div class="table-container">
-    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#genreModal">Tambah</button>
-    <table class="table table-striped table-bordered">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nama Genre</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-            <th>Aksi</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>[id]</td>
-            <td>[name]</td>
-            <td>[created_at]</td>
-            <td>[updated_at]</td>
-            <td>
-                <button class="btn btn-info btn-sm">Edit</button>
-                <button class="btn btn-danger btn-sm">Hapus</button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-</div>
+<div class="container mt-5 ">
+    <h2>Manajemen Genre</h2>
+    <div class="table-container">
+        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#genreCreateModal">Tambah</button>
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nama Genre</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th>Aksi</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($genres as $genre)
+                <tr>
+                    <td>{{ $genre['id'] }}</td>
+                    <td>{{ $genre['name'] }}</td>
+                    <td>{{ $genre['created_at'] }}</td>
+                    <td>{{ $genre['updated_at'] }}</td>
+                    <td>
+                        <button
+                            class="btn btn-info btn-sm btn-edit"
+                            data-id="{{ $genre['id'] }}"
+                            data-name="{{ $genre['name'] }}"
+                        >Edit</button>
 
-<div class="modal fade" id="genreModal" tabindex="-1" aria-labelledby="genreModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form action="/cast/store" method="POST">
+                        <form action="/genres/{{ $genre['id'] }}" method="POST" style="display:inline-block">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Genre = {{$genre['name']}}, dengan id = {{$genre['id']}} akan dihapus')">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
 
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title" id="castModalLabel">Tambah Genre</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Nama</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
+    {{-- Modal Tambah Genre --}}
+    <div class="modal fade" id="genreCreateModal" tabindex="-1" aria-labelledby="genreCreateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ route('genres.store') }}" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="genreCreateModalLabel">Tambah Genre</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="create-name" class="form-label">Nama</label>
+                            <input type="text" class="form-control" id="create-name" name="name" required>
+                        </div>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Edit Genre --}}
+    <div class="modal fade" id="genreEditModal" tabindex="-1" aria-labelledby="genreEditModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="genreEditForm" method="POST">
+                    @csrf
+                    <input type="hidden" name="_method" value="PUT">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="genreEditModalLabel">Edit Genre</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit-name" class="form-label">Nama</label>
+                            <input type="text" class="form-control" id="edit-name" name="name" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Perbarui</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
+@include('footer')
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+        crossorigin="anonymous">
+</script>
+
+<script>
+    document.querySelectorAll('.btn-edit').forEach(button => {
+        button.addEventListener('click', function () {
+            const genreId = this.getAttribute('data-id');
+            const genreName = this.getAttribute('data-name');
+
+            const form = document.getElementById('genreEditForm');
+            form.setAttribute('action', `/genres/${genreId}`);
+            document.getElementById('edit-name').value = genreName;
+
+            const modal = new bootstrap.Modal(document.getElementById('genreEditModal'));
+            modal.show();
+        });
+    });
+</script>
 </body>
 </html>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>

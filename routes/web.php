@@ -20,16 +20,13 @@ Route::get('/films/{id}/edit', [FilmManagementController::class, 'edit'])->name(
 Route::put('/films/{id}', [FilmManagementController::class, 'update'])->name('films.update');
 Route::get('/films/{id}', [FilmManagementController::class, 'destroy'])->name('films.destroy');
 
-Route::get('/genre', function () {
-    return view('genre');
-});
+Route::get('/genres', [GenreController::class, 'index'])->name('genres.index');
+Route::put('/genres/store', [GenreController::class, 'store'])->name('genres.store');
+Route::delete('/genres/{id}', [GenreController::class, 'destroy'])->name('genres.destroy');
 
-Route::get('/cast', function () {
-    return view('cast');
-});
-
-Route::get('/admin/genres', [GenreController::class, 'index']);
-Route::get('admin/cast', [CastController::class, 'index']);
+Route::get('/casts', [CastController::class, 'index'])->name('casts.index');
+Route::put('/casts/store', [CastController::class, 'store'])->name('casts.store');
+Route::delete('/casts/{id}', [CastController::class, 'destroy'])->name('casts.destroy');
 
 Route::get('/reviews', [ReviewsManagementController::class, 'index'])->name('reviews.index');
 Route::put('/reviews/{id}', [ReviewsManagementController::class, 'update'])->name('reviews.update');

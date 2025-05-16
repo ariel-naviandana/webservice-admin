@@ -4,23 +4,33 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Facades\Http;
 
 class CastController extends Controller
 {
-    public function index()
+    private $apiBaseUrl = 'http://localhost:8000/api';
+    public function index(Request $request)
     {
-        return view('cast');
-//        $response = Http::get('https://api.example.com/api/casts');
-//
-//        if ($response->successful()) {
-//            $casts = $response->json(); // asumsikan API kembalikan array JSON
-//            return view('admin.cast.index', compact('casts'));
-//        } else {
-//            return back()->with('error', 'Gagal mengambil data cast.');
-//        }
+        $response = Http::get("{$this->apiBaseUrl}/casts");
+
+        if ($response->successful()) {
+            $casts = $response->json();
+            $editingCast = null;
+
+            if ($request->has('edit_id')) {
+                $castRes = Http::get("{$this->apiBaseUrl}/casts/{$request->edit_id}");
+                if ($castRes->successful()) {
+                    $editingCast = $castRes->json();
+                }
+            }
+
+            return view('cast', compact('casts', 'editingCast'));
+        }
+
+        return view('cast')->with('message', 'Gagal memuat data.');
     }
 
-    public function create(){
+    public function store(Request $request){
 
     }
 
@@ -28,7 +38,14 @@ class CastController extends Controller
 
     }
 
-    public function delete(){
 
+    public function destroy($id){
+        $response = Http::delete("{$this->apiBaseUrl}/casts/{$id}");
+
+        if ($response->successful()) {
+            return redirect()->route('casts.index')->with('message', 'berhasil dihapus.');
+        }
+
+        return redirect()->route('casts.index')->with('message', 'Gagal menghapus data yang dipilih.');
     }
 }
