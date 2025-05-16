@@ -22,7 +22,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>ID</th>
-                    <th>Judul</th>
+                    <th class="col-2">Judul</th>
                     <th class="col-3">Sinopsis</th>
                     <th>Tahun Rilis</th>
                     <th>Durasi</th>
@@ -39,7 +39,7 @@
                     <td>{{$film['synopsis']}}</td>
                     <td>{{$film['release_year']}}</td>
                     <td>{{$film['duration']}}</td>
-                    <td>{{$film['poster_url']}}</td>
+                    <td><img src="{{$film['poster_url']}}" alt="Poster" height="200px"></td>
                     <td>{{$film['director']}}</td>
                     <td>
                         <a href="{{route('films.edit', $film['id'])}}" class="btn btn-primary">Edit</a>
