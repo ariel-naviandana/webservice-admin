@@ -29,6 +29,7 @@
     <title>Management Genre</title>
 </head>
 <body>
+@include('navbar')
 <h2>Manajemen Genre</h2>
 <div class="table-container">
     <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#genreModal">Tambah</button>
