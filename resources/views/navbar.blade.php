@@ -7,10 +7,10 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="#">Home</a>
+                    <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{route('home.index')}}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('films*') ? 'active' : '' }}" href="#">Manajemen Film</a>
+                    <a class="nav-link {{ request()->is('films*') ? 'active' : '' }}" href="{{route('films.index')}}">Manajemen Film</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('casts*') ? 'active' : '' }}" href="#">Manajemen Cast</a>
