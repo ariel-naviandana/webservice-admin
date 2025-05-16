@@ -8,11 +8,7 @@ use App\Http\Controllers\GenreController;
 use App\Http\Controllers\UsersManagementController;
 use App\Http\Controllers\ReviewsManagementController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
 Route::get('/users', [UsersManagementController::class, 'index'])->name('users.index');
 Route::put('/users/{id}', [UsersManagementController::class, 'update'])->name('users.update');
