@@ -11,9 +11,14 @@ class ReviewsManagementController extends Controller
 
     public function index(Request $request)
     {
+        $filmId = $request->query('film_id');
         $reviews = Http::get("{$this->apiBase}/reviews")->json();
         $users = Http::get("{$this->apiBase}/users")->json();
         $films = Http::get("{$this->apiBase}/films")->json();
+
+        if ($filmId) {
+            $reviews = array_filter($reviews, fn($review) => $review['film_id'] == $filmId);
+        }
 
         $editingReview = null;
         if ($request->has('edit_id')) {
@@ -28,6 +33,7 @@ class ReviewsManagementController extends Controller
             'editingReview' => $editingReview
         ]);
     }
+
 
     public function update(Request $request, $id)
     {

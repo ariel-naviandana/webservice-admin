@@ -42,6 +42,7 @@
                     <td><img src="{{$film['poster_url']}}" alt="Poster" height="200px"></td>
                     <td>{{$film['director']}}</td>
                     <td>
+                        <a href="{{ route('reviews.index', ['film_id' => $film['id']]) }}" class="btn btn-info">Lihat Review</a>
                         <a href="{{route('films.edit', $film['id'])}}" class="btn btn-primary">Edit</a>
                         <a href="{{route('films.destroy', $film['id'])}}" class="btn btn-danger">Hapus</a>
                     </td>
