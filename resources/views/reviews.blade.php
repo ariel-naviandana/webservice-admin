@@ -13,6 +13,16 @@
     <div class="container mt-5">
         <h1 class="mb-4">Manajemen Review</h1>
 
+        @if(request()->has('film_id'))
+            <div class="alert alert-secondary">
+                Menampilkan review untuk film:
+                <strong>
+                    {{ collect($films)->firstWhere('id', request('film_id'))['title'] ?? 'Film tidak ditemukan' }}
+                </strong>
+                <a href="{{ route('reviews.index') }}" class="btn btn-sm btn-outline-secondary float-end">Lihat Semua Review</a>
+            </div>
+        @endif
+
         @if(session('message'))
             <div class="alert alert-info">{{ session('message') }}</div>
         @endif
