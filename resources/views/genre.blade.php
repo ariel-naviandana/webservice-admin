@@ -10,8 +10,12 @@
             background-color: #f8f9fa;
         }
 
-        .container{
-
+        .action-btn {
+            min-width: 70px;
+            height: 30px;
+            padding: 2px 8px;
+            margin-bottom: 10px;
+            font-size: 0.875rem;
         }
 
         .table-container {
@@ -28,6 +32,7 @@
             padding: 2px 8px;
             font-size: 0.875rem;
         }
+
     </style>
     <title>Management Genre</title>
 </head>
@@ -35,8 +40,10 @@
 @include('navbar')
 <div class="container mt-5 ">
     <h1 class="mb-4">Manajemen Genre</h1>
-    <div class="table-container">
-        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#genreCreateModal">Tambah</button>
+{{--    <div class="table-container">--}}
+        <div class="d-grid gap-2">
+            <button class="btn btn-lg btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#genreCreateModal">Tambah</button>
+        </div>
         <table class="table table-striped table-hover">
             <thead class="table-dark">
             <tr>
@@ -56,7 +63,7 @@
                     <td>{{ $genre['updated_at'] }}</td>
                     <td>
                         <button
-                            class="btn btn-info btn-sm btn-edit"
+                            class="btn btn-info btn-sm btn-edit action-btn"
                             data-id="{{ $genre['id'] }}"
                             data-name="{{ $genre['name'] }}"
                         >Edit</button>
@@ -64,7 +71,7 @@
                         <form action="/genres/{{ $genre['id'] }}" method="POST" style="display:inline-block">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm"
+                            <button type="submit" class="btn btn-danger btn-sm action-btn"
                                     onclick="return confirm('Genre = {{$genre['name']}}, dengan id = {{$genre['id']}} akan dihapus')">Hapus</button>
                         </form>
                     </td>
@@ -123,7 +130,7 @@
                 </form>
             </div>
         </div>
-    </div>
+{{--    </div>--}}
 </div>
 
 @include('footer')
