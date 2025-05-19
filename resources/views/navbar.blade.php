@@ -25,7 +25,7 @@
                     <a class="nav-link {{ request()->is('reviews*') ? 'active' : '' }}" href="/reviews">Manajemen Review</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Login/Logout</a>
+                    <a class="nav-link" href="/login">Login/Logout</a>
                 </li>
             </ul>
         </div>

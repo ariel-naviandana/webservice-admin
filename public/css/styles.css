@@ -1,0 +1,315 @@
+/* ------------------------------ Light Mode IMDb-inspired ------------------------------ */
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f5f5f5; /* putih ke abu2 terang */
+    margin: 0;
+    padding: 20px;
+    overflow-y: auto;
+    color: #222; /* warna teks utama */
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px 40px;
+    margin: auto;
+    width: 85%;
+    max-width: 900px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.container2 {
+    background-color: #fff;
+    padding: 30px;
+    margin: auto;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    border-radius: 16px;
+    text-align: center;
+    max-width: 400px;
+}
+
+h1 {
+    font-weight: 700;
+    font-size: 36px;
+    margin-bottom: 10px;
+    color: #111;
+    border-bottom: 3px solid #f5f5f5; /* warna kuning IMDb */
+    padding-bottom: 8px;
+}
+
+h2 {
+    text-align: center;
+    color: #000;
+    font-size: 28px;
+}
+
+.film-details {
+    display: block; /* tidak pakai flex */
+    margin-top: 20px;
+}
+
+.film-details img {
+    display: block;
+    margin: 0 auto 20px auto;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 300px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.film-info {
+    margin-top: 10px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #444;
+}
+
+.film-info p {
+    margin: 10px 0;
+}
+
+.film-info p strong {
+    display: inline-block;
+    width: 120px;
+    color: #222;
+    font-weight: 600;
+}
+
+
+/* Genre & Pemeran */
+.film-info p.genre, .film-info p.cast {
+    margin-top: 12px;
+    font-size: 15px;
+    color: #666;
+}
+
+.film-info p.genre strong,
+.film-info p.cast strong {
+    color: #222;
+}
+
+/* Rating and Reviews */
+.rating-summary {
+    margin: 20px 0 10px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #f5c518;
+}
+
+.review {
+    background-color: #fafafa;
+    border-left: 5px solid #f5c518;
+    padding: 12px 15px;
+    margin-bottom: 12px;
+    border-radius: 4px;
+}
+
+.review p {
+    margin: 6px 0;
+    color: #333;
+    font-size: 15px;
+}
+
+/* Buttons */
+.btn-edit, .btn-delete, .btn-tambah, .btn-detail, a.back {
+    display: inline-block;
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.25s ease;
+}
+
+.btn-edit {
+    background-color: #f5c518;
+    color: #111;
+    border: none;
+}
+
+.btn-edit:hover {
+    background-color: #d4af37;
+}
+
+.btn-delete {
+    background-color: #e03e2f;
+    color: white;
+    border: none;
+}
+
+.btn-delete:hover {
+    background-color: #b53122;
+}
+
+.btn-detail, a.back {
+    background-color: #0077cc;
+    color: white;
+    border: none;
+}
+
+.btn-detail:hover, a.back:hover {
+    background-color: #005fa3;
+}
+
+/* Form */
+form {
+    margin-top: 20px;
+}
+
+input[type="text"], input[type="number"], textarea, select {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+input[type="submit"] {
+    background-color: #f5c518;
+    color: #111;
+    border: none;
+    font-weight: 700;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #d4af37;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+    .film-details {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .film-details img {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .film-info {
+        width: 100%;
+    }
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.form-group select {
+    width: 320px;
+    padding: 8px;
+    border: 1pc solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-actions input[type="submit"] {
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* ---------------------- IMDb-style Login Page ---------------------- */
+
+body.login-page {
+    background-color: #f5f5f5;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    padding: 40px 0;
+    min-height: 100vh;
+}
+
+.containerlogin {
+    background-color: #ffffff; /* Card hitam */
+    color: white;
+    padding-left: 30px; /* Sama rata semua sisi */
+    padding-right: 30px;
+    padding-bottom: 30px;
+    padding-top: 1px;
+    max-width: 400px;
+    margin: 50px auto; /* Tengah horizontal */
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+    text-align: center;
+}
+
+
+h2 {
+    color: #f5c518;
+    margin-bottom: 24px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+form label {
+    text-align: left;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #000;
+}
+
+form input[type="email"],
+form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+}
+
+input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: none;
+}
+
+
+input[type="submit"]:hover {
+    background-color: #e4b70d;
+}
+
+a.btn-detail {
+    display: inline-block;
+    background-color: #e4b70d;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+
+a.btn-detail:hover {
+   background-color: #ffe270;
+   color: rgb(184, 184, 184);
+}
