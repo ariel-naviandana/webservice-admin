@@ -21,11 +21,13 @@ Route::put('/films/{id}', [FilmManagementController::class, 'update'])->name('fi
 Route::get('/films/{id}', [FilmManagementController::class, 'destroy'])->name('films.destroy');
 
 Route::get('/genres', [GenreController::class, 'index'])->name('genres.index');
-Route::put('/genres/store', [GenreController::class, 'store'])->name('genres.store');
+Route::post('/genres/store', [GenreController::class, 'store'])->name('genres.store');
+Route::put('/genres/{id}', [GenreController::class, 'update'])->name('genres.update');
 Route::delete('/genres/{id}', [GenreController::class, 'destroy'])->name('genres.destroy');
 
 Route::get('/casts', [CastController::class, 'index'])->name('casts.index');
-Route::put('/casts/{id}', [CastController::class, 'store'])->name('casts.store');
+Route::post('/casts/store', [CastController::class, 'store'])->name('casts.store');
+Route::put('/casts/{id}', [CastController::class, 'update'])->name('casts.update');
 Route::delete('/casts/{id}', [CastController::class, 'destroy'])->name('casts.destroy');
 
 Route::get('/reviews', [ReviewsManagementController::class, 'index'])->name('reviews.index');
