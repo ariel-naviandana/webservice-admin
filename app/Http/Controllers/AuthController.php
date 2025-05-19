@@ -41,8 +41,13 @@ class AuthController extends Controller
                 Session::put('user_email', $user['email']);
                 Session::put('user_role', $user['role']);
 
+                //if role != admin, go back to login
+                if ($user['role'] != 'admin') {
+                    return redirect()->route('login_form')->with('message', 'Anda tidak memiliki akses ke halaman ini.');
+                }
+
                 // Redirect ke halaman welcome.blade.php setelah login berhasil
-                return redirect()->route('welcome'); // Ganti films.index menjadi welcome
+                return redirect()->route('home.index'); // Ganti films.index menjadi welcome
             } else {
                 // Jika login gagal, ambil pesan error dari API dan redirect kembali ke form login
                 $error = $response->json('message') ?? 'Login gagal. Silakan coba lagi.';
