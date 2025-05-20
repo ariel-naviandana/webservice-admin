@@ -13,6 +13,7 @@
     <div class="container mt-5">
         <h1 class="mb-4">Edit Film</h1>
         <hr>
+        <a href="{{route('films.index')}}" class="btn btn-secondary mb-3">Kembali</a>
 
         <form method="POST" action="{{route('films.update', $film['id'])}}">
             @csrf
@@ -43,10 +44,49 @@
                 <input type="text" class="form-control" name="director" id="director" value="{{old('director', $film['director'])}}">
             </div>
 
-            {{-- TODO Tambahin dropdown cast dan genre --}}
-            <button type="submit" class="btn btn-primary mb-3">Submit</button><br>
-            <a href="{{route('films.index')}}" class="btn btn-secondary">Kembali</a>
+            {{-- TODO Tambahin pilihan cast dan genre --}}
+            <div class="mb-3">
+                <label for="genre" class="form-label">Pilih Genre</label><br>
+                @forelse ($genres as $genre)
+                <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="checkDefault">
+                        <label class="form-check-label" for="checkDefault">
+                            {{$genre['name']}}
+                        </label>
+                </div>
+                @empty
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="checkDisabled" disabled>
+                    <label class="form-check-label" for="checkDisabled">
+                        Tidak ada Genre untuk dipilih
+                    </label>
+                </div>
+                @endforelse
+            </div>
+
+            <div class="mb-3">
+                <label for="cast" class="form-label">Pilih Cast</label><br>
+                @forelse ($casts as $cast)
+                <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="checkDefault">
+                        <label class="form-check-label" for="checkDefault">
+                            {{$cast['name']}}
+                        </label>
+                </div>
+                @empty
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="checkDisabled" disabled>
+                    <label class="form-check-label" for="checkDisabled">
+                        Tidak ada Cast untuk dipilih
+                    </label>
+                </div>
+                @endforelse
+            </div>
+
+            <button type="submit" class="btn btn-success mb-3">Submit</button>
         </form>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 </body>
 </html>
