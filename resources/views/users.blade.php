@@ -62,7 +62,7 @@
     @if(isset($editingUser))
     <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form method="POST" action="{{ isset($editingUser) ? route('users.update', $editingUser['id']) : '#' }}">
+            <form method="POST" action="{{ route('users.update', $editingUser['id']) }}">
                 @csrf
                 @method('PUT')
                 <div class="modal-content">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class CastController extends Controller
 {
@@ -11,7 +12,8 @@ class CastController extends Controller
 
     public function index(Request $request)
     {
-        $response = Http::get("{$this->apiBaseUrl}/casts");
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->get("{$this->apiBaseUrl}/casts");
 
         if ($response->successful()) {
             $casts = $response->json();
@@ -38,35 +40,53 @@ class CastController extends Controller
             try {
                 $cloudinaryUrl = 'https://api.cloudinary.com/v1_1/dto6d9tbe/image/upload';
                 $cloudinaryPreset = 'projek-tis';
+                $maxRetries = 3;
+                $retryDelay = 1000;
 
-                $response = Http::withOptions([
-                    'verify' => false,
-                ])->attach(
-                    'file',
-                    file_get_contents($request->file('photo')->getRealPath()),
-                    $request->file('photo')->getClientOriginalName()
-                )->post($cloudinaryUrl, [
-                    'upload_preset' => $cloudinaryPreset,
-                    'folder' => 'cast_photos',
-                ]);
+                $cloudinaryResponse = null;
+                for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+                    try {
+                        $cloudinaryResponse = Http::withOptions([
+                            'verify' => false,
+                            'timeout' => 30,
+                            'connect_timeout' => 10,
+                        ])->attach(
+                            'file',
+                            file_get_contents($request->file('photo')->getRealPath()),
+                            $request->file('photo')->getClientOriginalName()
+                        )->post($cloudinaryUrl, [
+                            'upload_preset' => $cloudinaryPreset,
+                            'folder' => 'cast_photos',
+                        ]);
 
-                if ($response->successful()) {
-                    $data['photo_url'] = $response->json()['secure_url'];
-                } else {
+                        if ($cloudinaryResponse->successful()) {
+                            $data['photo_url'] = $cloudinaryResponse->json()['secure_url'];
+                            break;
+                        }
+                    } catch (\Exception $e) {
+                        if ($attempt === $maxRetries) {
+                            return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar: ' . $e->getMessage());
+                        }
+                        sleep($retryDelay / 1000);
+                    }
+                }
+
+                if (!$cloudinaryResponse->successful()) {
                     return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar ke Cloudinary.');
                 }
             } catch (\Exception $e) {
-                return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar ke Cloudinary: ' . $e->getMessage());
+                return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar: ' . $e->getMessage());
             }
         }
 
-        $response = Http::post("{$this->apiBaseUrl}/casts", $data);
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->post("{$this->apiBaseUrl}/casts", $data);
 
         if ($response->successful()) {
             return redirect()->route('casts.index')->with('message', 'Berhasil ditambahkan.');
-        } else {
-            return redirect()->route('casts.index')->with('message', 'Gagal menambahkan data.');
         }
+
+        return redirect()->route('casts.index')->with('message', 'Gagal menambahkan data: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function update(Request $request, $id)
@@ -86,45 +106,64 @@ class CastController extends Controller
             try {
                 $cloudinaryUrl = 'https://api.cloudinary.com/v1_1/dto6d9tbe/image/upload';
                 $cloudinaryPreset = 'projek-tis';
+                $maxRetries = 3;
+                $retryDelay = 1000;
 
-                $response = Http::withOptions([
-                    'verify' => false,
-                ])->attach(
-                    'file',
-                    file_get_contents($request->file('photo')->getRealPath()),
-                    $request->file('photo')->getClientOriginalName()
-                )->post($cloudinaryUrl, [
-                    'upload_preset' => $cloudinaryPreset,
-                    'folder' => 'cast_photos',
-                ]);
+                $cloudinaryResponse = null;
+                for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+                    try {
+                        $cloudinaryResponse = Http::withOptions([
+                            'verify' => false,
+                            'timeout' => 30,
+                            'connect_timeout' => 10,
+                        ])->attach(
+                            'file',
+                            file_get_contents($request->file('photo')->getRealPath()),
+                            $request->file('photo')->getClientOriginalName()
+                        )->post($cloudinaryUrl, [
+                            'upload_preset' => $cloudinaryPreset,
+                            'folder' => 'cast_photos',
+                        ]);
 
-                if ($response->successful()) {
-                    $data['photo_url'] = $response->json()['secure_url'];
-                } else {
+                        if ($cloudinaryResponse->successful()) {
+                            $data['photo_url'] = $cloudinaryResponse->json()['secure_url'];
+                            break;
+                        }
+                    } catch (\Exception $e) {
+                        if ($attempt === $maxRetries) {
+                            return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar: ' . $e->getMessage());
+                        }
+                        sleep($retryDelay / 1000);
+                    }
+                }
+
+                if (!$cloudinaryResponse->successful()) {
                     return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar ke Cloudinary.');
                 }
             } catch (\Exception $e) {
-                return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar ke Cloudinary: ' . $e->getMessage());
+                return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar: ' . $e->getMessage());
             }
         }
 
-        $response = Http::put("{$this->apiBaseUrl}/casts/{$id}", $data);
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->put("{$this->apiBaseUrl}/casts/{$id}", $data);
 
         if ($response->successful()) {
             return redirect()->route('casts.index')->with('message', 'Berhasil diupdate.');
-        } else {
-            return redirect()->route('casts.index')->with('message', 'Gagal mengupdate data.');
         }
+
+        return redirect()->route('casts.index')->with('message', 'Gagal mengupdate data: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function destroy($id)
     {
-        $response = Http::delete("{$this->apiBaseUrl}/casts/{$id}");
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->delete("{$this->apiBaseUrl}/casts/{$id}");
 
         if ($response->successful()) {
             return redirect()->route('casts.index')->with('message', 'Berhasil dihapus.');
         }
 
-        return redirect()->route('casts.index')->with('message', 'Gagal menghapus data yang dipilih.');
+        return redirect()->route('casts.index')->with('message', 'Gagal menghapus data: ' . ($response->json('message') ?? 'Unknown error'));
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class UsersManagementController extends Controller
 {
@@ -11,14 +12,15 @@ class UsersManagementController extends Controller
 
     public function index(Request $request)
     {
-        $response = Http::get("{$this->apiBaseUrl}/users");
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->get("{$this->apiBaseUrl}/users");
 
         if ($response->successful()) {
             $users = $response->json();
             $editingUser = null;
 
             if ($request->has('edit_id')) {
-                $userRes = Http::get("{$this->apiBaseUrl}/users/{$request->edit_id}");
+                $userRes = Http::withToken($token)->get("{$this->apiBaseUrl}/users/{$request->edit_id}");
                 if ($userRes->successful()) {
                     $editingUser = $userRes->json();
                 }
@@ -33,27 +35,26 @@ class UsersManagementController extends Controller
     public function update(Request $request, $id)
     {
         $data = $request->only(['name', 'email', 'role']);
-        if ($request->filled('password')) {
-            $data['password'] = $request->password;
-        }
 
-        $response = Http::put("{$this->apiBaseUrl}/users/{$id}", $data);
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->put("{$this->apiBaseUrl}/users/{$id}", $data);
 
         if ($response->successful()) {
             return redirect()->route('users.index')->with('message', 'User berhasil diperbarui.');
         }
 
-        return redirect()->route('users.index')->with('message', 'User berhasil diperbarui.');
+        return redirect()->route('users.index')->with('message', 'Gagal memperbarui user: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function destroy($id)
     {
-        $response = Http::delete("{$this->apiBaseUrl}/users/{$id}");
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->delete("{$this->apiBaseUrl}/users/{$id}");
 
         if ($response->successful()) {
             return redirect()->route('users.index')->with('message', 'User berhasil dihapus.');
         }
 
-        return redirect()->route('users.index')->with('message', 'Gagal menghapus user.');
+        return redirect()->route('users.index')->with('message', 'Gagal menghapus user: ' . ($response->json('message') ?? 'Unknown error'));
     }
 }

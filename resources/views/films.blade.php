@@ -44,7 +44,11 @@
                     <td>
                         <a href="{{ route('reviews.index', ['film_id' => $film['id']]) }}" class="btn btn-info">Lihat Review</a>
                         <a href="{{route('films.edit', $film['id'])}}" class="btn btn-primary">Edit</a>
-                        <a href="{{route('films.destroy', $film['id'])}}" class="btn btn-danger">Hapus</a>
+                        <form action="{{ route('films.destroy', $film['id']) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus film ini?')">Hapus</button>
+                        </form>
                     </td>
                 </tr>
                 @empty

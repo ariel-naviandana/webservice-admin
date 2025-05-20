@@ -1,8 +1,6 @@
 <?php
-//check session
-
+// Check session
 session_start();
-
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -31,9 +29,14 @@ session_start();
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('reviews*') ? 'active' : '' }}" href="/reviews">Manajemen Review</a>
                 </li>
-                <!-- <li class="nav-item">
-                    <a class="nav-link" href="/login">Login/Logout</a>
-                </li> -->
+                @if (Session::has('user_id'))
+                    <li class="nav-item">
+                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="nav-link btn btn-link text-light">Logout</button>
+                        </form>
+                    </li>
+                @endif
             </ul>
         </div>
     </div>

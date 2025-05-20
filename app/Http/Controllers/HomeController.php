@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
 {
@@ -11,23 +12,23 @@ class HomeController extends Controller
 
     public function index()
     {
-
         $films = $users = $reviews = [];
-        $totalFilm = $totalUsers = $totalReviews = 0;
+        $totalFilm = $totalUser = $totalReview = 0;
+        $token = Session::get('api_token');
 
-        $responseFilm = Http::get("{$this->apiBaseUrl}/films");
+        $responseFilm = Http::withToken($token)->get("{$this->apiBaseUrl}/films");
         if ($responseFilm->successful()) {
             $films = $responseFilm->json();
             $totalFilm = count($films);
         }
 
-        $responseUser = Http::get("{$this->apiBaseUrl}/users");
-        if($responseUser->successful()) {
+        $responseUser = Http::withToken($token)->get("{$this->apiBaseUrl}/users");
+        if ($responseUser->successful()) {
             $users = $responseUser->json();
             $totalUser = count($users);
         }
 
-        $responseReview = Http::get("{$this->apiBaseUrl}/reviews");
+        $responseReview = Http::withToken($token)->get("{$this->apiBaseUrl}/reviews");
         if ($responseReview->successful()) {
             $reviews = $responseReview->json();
             $totalReview = count($reviews);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class ReviewsManagementController extends Controller
 {
@@ -11,10 +12,11 @@ class ReviewsManagementController extends Controller
 
     public function index(Request $request)
     {
+        $token = Session::get('api_token');
         $filmId = $request->query('film_id');
-        $reviews = Http::get("{$this->apiBase}/reviews")->json();
-        $users = Http::get("{$this->apiBase}/users")->json();
-        $films = Http::get("{$this->apiBase}/films")->json();
+        $reviews = Http::withToken($token)->get("{$this->apiBase}/reviews")->json();
+        $users = Http::withToken($token)->get("{$this->apiBase}/users")->json();
+        $films = Http::withToken($token)->get("{$this->apiBase}/films")->json();
 
         if ($filmId) {
             $reviews = array_filter($reviews, fn($review) => $review['film_id'] == $filmId);
@@ -23,7 +25,10 @@ class ReviewsManagementController extends Controller
         $editingReview = null;
         if ($request->has('edit_id')) {
             $editId = $request->query('edit_id');
-            $editingReview = Http::get("{$this->apiBase}/reviews/{$editId}")->json();
+            $response = Http::withToken($token)->get("{$this->apiBase}/reviews/{$editId}");
+            if ($response->successful()) {
+                $editingReview = $response->json();
+            }
         }
 
         return view('reviews', [
@@ -34,21 +39,37 @@ class ReviewsManagementController extends Controller
         ]);
     }
 
-
     public function update(Request $request, $id)
     {
-        $response = Http::put("{$this->apiBase}/reviews/{$id}", [
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:10',
+            'comment' => 'required|string',
+            'is_critic' => 'required|boolean',
+        ]);
+
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->put("{$this->apiBase}/reviews/{$id}", [
             'rating' => $request->input('rating'),
             'comment' => $request->input('comment'),
             'is_critic' => $request->input('is_critic'),
         ]);
 
-        return redirect()->route('reviews.index')->with('message', 'Review berhasil diperbarui.');
+        if ($response->successful()) {
+            return redirect()->route('reviews.index')->with('message', 'Review berhasil diperbarui.');
+        }
+
+        return redirect()->route('reviews.index')->with('message', 'Gagal memperbarui review: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function destroy($id)
     {
-        Http::delete("{$this->apiBase}/reviews/{$id}");
-        return redirect()->route('reviews.index')->with('message', 'Review berhasil dihapus.');
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->delete("{$this->apiBase}/reviews/{$id}");
+
+        if ($response->successful()) {
+            return redirect()->route('reviews.index')->with('message', 'Review berhasil dihapus.');
+        }
+
+        return redirect()->route('reviews.index')->with('message', 'Gagal menghapus review: ' . ($response->json('message') ?? 'Unknown error'));
     }
 }

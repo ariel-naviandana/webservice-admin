@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class FilmManagementController extends Controller
 {
@@ -12,13 +13,15 @@ class FilmManagementController extends Controller
 
     public function index()
     {
-        $response = Http::get("{$this->apiBaseUrl}/films");
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->get("{$this->apiBaseUrl}/films");
+
         if ($response->successful()) {
             $films = $response->json();
             return view('films', compact('films'));
-        } else {
-            return view('films')->with('error', 'Gagal memuat data.');
         }
+
+        return view('films')->with('error', 'Gagal memuat data.');
     }
 
     public function store(Request $request)
@@ -51,15 +54,15 @@ class FilmManagementController extends Controller
                 $cloudinaryUrl = 'https://api.cloudinary.com/v1_1/dto6d9tbe/image/upload';
                 $cloudinaryPreset = 'projek-tis';
                 $maxRetries = 3;
-                $retryDelay = 1000; // 1 second
+                $retryDelay = 1000;
 
                 $response = null;
                 for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
                     try {
                         $response = Http::withOptions([
                             'verify' => false,
-                            'timeout' => 30, // Increased from default 10s to 30s
-                            'connect_timeout' => 10, // Connection timeout
+                            'timeout' => 30,
+                            'connect_timeout' => 10,
                         ])->attach(
                             'file',
                             file_get_contents($request->file('photo')->getRealPath()),
@@ -72,14 +75,13 @@ class FilmManagementController extends Controller
                         if ($response->successful()) {
                             $data['poster_url'] = $response->json()['secure_url'];
                             break;
-                        } else {
-                            Log::warning("Cloudinary upload failed on attempt {$attempt}", [
-                                'status' => $response->status(),
-                                'body' => $response->body(),
-                            ]);
-                            if ($attempt === $maxRetries) {
-                                return back()->with('error', 'Gagal mengunggah gambar ke Cloudinary setelah beberapa percobaan.');
-                            }
+                        }
+                        Log::warning("Cloudinary upload failed on attempt {$attempt}", [
+                            'status' => $response ? $response->status() : 'N/A',
+                            'body' => $response ? $response->body() : 'N/A',
+                        ]);
+                        if ($attempt === $maxRetries) {
+                            return back()->with('error', 'Gagal mengunggah gambar ke Cloudinary setelah beberapa percobaan.');
                         }
                     } catch (\Exception $e) {
                         Log::error("Cloudinary upload error on attempt {$attempt}", [
@@ -101,13 +103,14 @@ class FilmManagementController extends Controller
             }
         }
 
-        $response = Http::post("{$this->apiBaseUrl}/films", $data);
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->post("{$this->apiBaseUrl}/films", $data);
 
         if ($response->successful()) {
             return redirect()->route('films.index')->with('success', 'Film berhasil ditambahkan.');
-        } else {
-            return back()->with('error', 'Gagal menambahkan film.');
         }
+
+        return back()->with('error', 'Gagal menambahkan film: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function update(Request $request, $id)
@@ -140,15 +143,15 @@ class FilmManagementController extends Controller
                 $cloudinaryUrl = 'https://api.cloudinary.com/v1_1/dto6d9tbe/image/upload';
                 $cloudinaryPreset = 'projek-tis';
                 $maxRetries = 3;
-                $retryDelay = 1000; // 1 second
+                $retryDelay = 1000;
 
                 $response = null;
                 for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
                     try {
                         $response = Http::withOptions([
                             'verify' => false,
-                            'timeout' => 30, // Increased from default 10s to 30s
-                            'connect_timeout' => 10, // Connection timeout
+                            'timeout' => 30,
+                            'connect_timeout' => 10,
                         ])->attach(
                             'file',
                             file_get_contents($request->file('photo')->getRealPath()),
@@ -161,14 +164,13 @@ class FilmManagementController extends Controller
                         if ($response->successful()) {
                             $data['poster_url'] = $response->json()['secure_url'];
                             break;
-                        } else {
-                            Log::warning("Cloudinary upload failed on attempt {$attempt}", [
-                                'status' => $response->status(),
-                                'body' => $response->body(),
-                            ]);
-                            if ($attempt === $maxRetries) {
-                                return back()->with('error', 'Gagal mengunggah gambar ke Cloudinary setelah beberapa percobaan.');
-                            }
+                        }
+                        Log::warning("Cloudinary upload failed on attempt {$attempt}", [
+                            'status' => $response ? $response->status() : 'N/A',
+                            'body' => $response ? $response->body() : 'N/A',
+                        ]);
+                        if ($attempt === $maxRetries) {
+                            return back()->with('error', 'Gagal mengunggah gambar ke Cloudinary setelah beberapa percobaan.');
                         }
                     } catch (\Exception $e) {
                         Log::error("Cloudinary upload error on attempt {$attempt}", [
@@ -190,30 +192,34 @@ class FilmManagementController extends Controller
             }
         }
 
-        $response = Http::put("{$this->apiBaseUrl}/films/{$id}", $data);
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->put("{$this->apiBaseUrl}/films/{$id}", $data);
 
         if ($response->successful()) {
             return redirect()->route('films.index')->with('success', 'Film berhasil diperbarui.');
-        } else {
-            return back()->with('error', 'Gagal merubah film.');
         }
+
+        return back()->with('error', 'Gagal merubah film: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function destroy($id)
     {
-        $response = Http::delete("{$this->apiBaseUrl}/films/{$id}");
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->delete("{$this->apiBaseUrl}/films/{$id}");
+
         if ($response->successful()) {
             return redirect()->route('films.index')->with('success', 'Film berhasil dihapus.');
-        } else {
-            return back()->with('error', 'Gagal menghapus film dengan ID tersebut.');
         }
+
+        return back()->with('error', 'Gagal menghapus film: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function edit($id)
     {
-        $response = Http::get("{$this->apiBaseUrl}/films/{$id}");
-        $responseCasts = Http::get("{$this->apiBaseUrl}/casts");
-        $responseGenres = Http::get("{$this->apiBaseUrl}/genres");
+        $token = Session::get('api_token');
+        $response = Http::withToken($token)->get("{$this->apiBaseUrl}/films/{$id}");
+        $responseCasts = Http::withToken($token)->get("{$this->apiBaseUrl}/casts");
+        $responseGenres = Http::withToken($token)->get("{$this->apiBaseUrl}/genres");
 
         if ($response->successful()) {
             $film = $response->json();
@@ -224,21 +230,23 @@ class FilmManagementController extends Controller
             $casts = collect($responseCasts->json())->sortBy('name')->values();
             $genres = collect($responseGenres->json())->sortBy('name')->values();
             return view('edit_films', compact('film', 'casts', 'genres', 'filmCasts', 'filmGenres', 'filmCastIds', 'filmGenreIds'));
-        } else {
-            return redirect()->route('films.index')->with('error', 'Gagal mengambil data film.');
         }
+
+        return redirect()->route('films.index')->with('error', 'Gagal mengambil data film.');
     }
 
     public function add()
     {
-        $responseCasts = Http::get("{$this->apiBaseUrl}/casts");
-        $responseGenres = Http::get("{$this->apiBaseUrl}/genres");
+        $token = Session::get('api_token');
+        $responseCasts = Http::withToken($token)->get("{$this->apiBaseUrl}/casts");
+        $responseGenres = Http::withToken($token)->get("{$this->apiBaseUrl}/genres");
+
         if ($responseCasts->successful() && $responseGenres->successful()) {
             $casts = collect($responseCasts->json())->sortBy('name')->values();
             $genres = collect($responseGenres->json())->sortBy('name')->values();
             return view('add_films', compact('casts', 'genres'));
-        } else {
-            return redirect()->route('films.index')->with('error', 'Gagal mengambil data.');
         }
+
+        return redirect()->route('films.index')->with('error', 'Gagal mengambil data.');
     }
 }
