@@ -61,7 +61,7 @@
                 <td>{{ $cast['name'] }}</td>
                 <td>{{ $cast['birth_date'] }}</td>
                 <td>
-                    <img src="{{$cast['photo_url'] ? $cast['photo_url'] : 'https://i.pinimg.com/236x/56/2e/be/562ebed9cd49b9a09baa35eddfe86b00.jpg'}}" style="height: 50px; width: 50px; border-radius: 50%;" alt="img">
+                    <img src="{{$cast['photo_url'] ?? 'https://i.pinimg.com/236x/56/2e/be/562ebed9cd49b9a09baa35eddfe86b00.jpg'}}" style="height: 50px; width: 50px; border-radius: 50%;" alt="img">
                 </td>
                 <td>{{ $cast['created_at'] }}</td>
                 <td>{{ $cast['updated_at'] }}</td>

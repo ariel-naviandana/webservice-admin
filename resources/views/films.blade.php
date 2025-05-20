@@ -39,7 +39,7 @@
                     <td>{{$film['synopsis']}}</td>
                     <td>{{$film['release_year']}}</td>
                     <td>{{$film['duration']}}</td>
-                    <td><img src="{{$film['poster_url'] ? $film['poster_url'] : 'https://i.pinimg.com/236x/56/2e/be/562ebed9cd49b9a09baa35eddfe86b00.jpg'}}" alt="Poster" height="50px"></td>
+                    <td><img src="{{$film['poster_url'] ?? 'https://i.pinimg.com/236x/56/2e/be/562ebed9cd49b9a09baa35eddfe86b00.jpg'}}" alt="Poster" height="50px"></td>
                     <td>{{$film['director']}}</td>
                     <td>
                         <a href="{{ route('reviews.index', ['film_id' => $film['id']]) }}" class="btn btn-info">Lihat Review</a>
