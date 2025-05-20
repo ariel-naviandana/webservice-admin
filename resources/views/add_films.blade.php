@@ -44,6 +44,44 @@
             </div>
 
             {{-- TODO Tambahin dropdown cast dan genre --}}
+            <div class="mb-3">
+                <label for="genre" class="form-label">Pilih Genre</label><br>
+                @forelse ($genres as $genre)
+                <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="checkDefault">
+                        <label class="form-check-label" for="checkDefault">
+                            {{$genre['name']}}
+                        </label>
+                </div>
+                @empty
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="checkDisabled" disabled>
+                    <label class="form-check-label" for="checkDisabled">
+                        Tidak ada Genre untuk dipilih
+                    </label>
+                </div>
+                @endforelse
+            </div>
+
+            <div class="mb-3">
+                <label for="cast" class="form-label">Pilih Cast</label><br>
+                @forelse ($casts as $cast)
+                <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="checkDefault">
+                        <label class="form-check-label" for="checkDefault">
+                            {{$cast['name']}}
+                        </label>
+                </div>
+                @empty
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="checkDisabled" disabled>
+                    <label class="form-check-label" for="checkDisabled">
+                        Tidak ada Cast untuk dipilih
+                    </label>
+                </div>
+                @endforelse
+            </div>
+
             <button type="submit" class="btn btn-primary mb-3">Submit</button><br>
             <a href="{{route('films.index')}}" class="btn btn-secondary">Kembali</a>
         </form>
