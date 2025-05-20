@@ -1,3 +1,10 @@
+<?php
+//check session
+
+session_start();
+
+?>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">Admin Panel</a>
@@ -24,9 +31,9 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('reviews*') ? 'active' : '' }}" href="/reviews">Manajemen Review</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Login/Logout</a>
-                </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link" href="/login">Login/Logout</a>
+                </li> -->
             </ul>
         </div>
     </div>

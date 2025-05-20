@@ -53,7 +53,7 @@
                         <td>{{ $review['comment'] }}</td>
                         <td>{{ $review['is_critic'] ? 'Yes' : 'No' }}</td>
                         <td>
-                            <a href="{{ route('reviews.index', ['edit_id' => $review['id']]) }}" class="btn btn-sm btn-primary">Edit</a>
+                            <a href="{{ route('reviews.index', ['edit_id' => $review['id']]) }}" class="btn btn-sm btn-primary">Detail</a>
                             <form action="/reviews/{{ $review['id'] }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus review ini?')">
                                 @csrf
                                 @method('DELETE')
@@ -78,7 +78,7 @@
                 @method('PUT')
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Review</h5>
+                        <h5 class="modal-title">Detail Review</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -107,8 +107,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Simpan</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <!-- <button type="submit" class="btn btn-success">Simpan</button> -->
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                     </div>
                 </div>
             </form>

@@ -7,6 +7,7 @@ use App\Http\Controllers\CastController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\UsersManagementController;
 use App\Http\Controllers\ReviewsManagementController;
+use App\Http\Controllers\AuthController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
@@ -31,3 +32,11 @@ Route::delete('/casts/{id}', [CastController::class, 'destroy'])->name('casts.de
 Route::get('/reviews', [ReviewsManagementController::class, 'index'])->name('reviews.index');
 Route::put('/reviews/{id}', [ReviewsManagementController::class, 'update'])->name('reviews.update');
 Route::delete('/reviews/{id}', [ReviewsManagementController::class, 'destroy'])->name('reviews.destroy');
+
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login_form');
+Route::post('/login_process', [AuthController::class, 'loginProcess'])->name('login_process');
+
+// Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register_form');
+// Route::post('/register_process', [AuthController::class, 'registerProcess'])->name('register_process');
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
