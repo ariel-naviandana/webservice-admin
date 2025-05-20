@@ -37,10 +37,11 @@
 @include('navbar')
 <div class="container mt-5">
 <h1 class="mb-4">Manajemen Cast</h1>
-<div class="table-container">
-    <div class="d-flex justify-content-start mb-3">
-        <button id="btn-add" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#castModal">Tambah</button>
+{{--<div class="table-container">--}}
+    <div class="d-grid gap-2">
+        <button id="btn-add" class="btn btn-lg btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#castModal">Tambah data cast</button>
     </div>
+
     <table class="table table-striped table-hover">
         <thead class="table-dark">
         <tr>
@@ -73,7 +74,7 @@
         @endforeach
         </tbody>
     </table>
-</div>
+{{--</div>--}}
 </div>
 
 <!-- Pop up gitulah -->

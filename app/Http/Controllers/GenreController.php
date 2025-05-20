@@ -30,12 +30,37 @@ class GenreController extends Controller
         return view('genre')->with('message', 'Gagal memuat data user.');
     }
 
-    public function create(){
+    public function store(Request $request){
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
 
+        $data = $request->only('name');
+
+        $response = Http::post("{$this->apiBaseUrl}/genres", $data);
+
+        if ($response->successful()) {
+            return redirect()->route('genres.index')->with('success', 'Berhasil menambahkan genre baru.');
+        } else {
+            return back()->with('error', 'Gagal memperbarui data genre.')->withInput();
+        }
     }
 
-    public function update(){
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
 
+        $data = $request->only('name');
+
+        $response = Http::put("{$this->apiBaseUrl}/genres/{$id}", $data);
+
+        if ($response->successful()) {
+            return redirect()->route('genres.index')->with('success', 'Berhasil memperbarui data genre.');
+        } else {
+            return back()->with('error', 'Gagal memperbarui data genre.')->withInput();
+        }
     }
 
     public function destroy($id){
@@ -44,7 +69,6 @@ class GenreController extends Controller
         if ($response->successful()) {
             return redirect()->route('genres.index')->with('message', 'Genre yang dipilih berhasil dihapus.');
         }
-
         return redirect()->route('genres.index')->with('message', 'Gagal menghapus genre yang dipilih.');
     }
 }
