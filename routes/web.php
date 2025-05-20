@@ -17,6 +17,7 @@ Route::delete('/users/{id}', [UsersManagementController::class, 'destroy'])->nam
 
 Route::get('/films', [FilmManagementController::class, 'index'])->name('films.index');
 Route::get('/films/add', [FilmManagementController::class, 'add'])->name('films.add');
+Route::post('/films/store', [FilmManagementController::class, 'store'])->name('films.store');
 Route::get('/films/{id}/edit', [FilmManagementController::class, 'edit'])->name('films.edit');
 Route::put('/films/{id}', [FilmManagementController::class, 'update'])->name('films.update');
 Route::get('/films/{id}', [FilmManagementController::class, 'destroy'])->name('films.destroy');
