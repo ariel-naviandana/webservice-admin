@@ -22,6 +22,8 @@ class FilmManagementController extends Controller
     public function store()
     {
         $response = Http::post("{$this->apiBaseUrl}/films");
+        // $responseCast = Http::get("{$this->apiBaseUrl}/");
+        // $responseGenres = Http::get("{$this->apiBaseUrl}/{$id}");
     }
     public function update(Request $request, $id)
     {
@@ -46,21 +48,22 @@ class FilmManagementController extends Controller
     public function edit($id)
     {
         $response = Http::get("{$this->apiBaseUrl}/films/{$id}");
-        // $responseCast = Http::get("{$this->apiBaseUrl}/{$id}");
-        // $responseGenres = Http::get("{$this->apiBaseUrl}/{$id}");
+        $responseCasts = Http::get("{$this->apiBaseUrl}/casts");
+        $responseGenres = Http::get("{$this->apiBaseUrl}/genres");
 
         if ($response->successful()) {
             $film = $response->json();
-            return view('edit_films', compact('film'));
+            $casts = collect($responseCasts->json())->sortBy('name')->values();
+            $genres = collect($responseGenres->json())->sortBy('name')->values();
+            return view('edit_films', compact('film', 'casts', 'genres', 'filmCasts', 'filmGenres', 'filmCastIds', 'filmGenreIds'));
         } else {
             return redirect()->route('films.index')->with('error', 'Gagal mengambil data film.');
         }
     }
     public function add()
     {
-        // $response = Http::get("{$this->apiBaseUrl}/films");
-        // $responseCast = Http::get("{$this->apiBaseUrl}/");
-        // $responseGenres = Http::get("{$this->apiBaseUrl}/{$id}");
+        $responseCasts = Http::get("{$this->apiBaseUrl}/casts");
+        $responseGenres = Http::get("{$this->apiBaseUrl}/genres");
         return view('add_films');
     }
 }
