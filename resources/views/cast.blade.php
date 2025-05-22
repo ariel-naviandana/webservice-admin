@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -32,16 +33,15 @@
     </style>
 
     <title>Management Cast</title>
+
 </head>
 <body>
 @include('navbar')
 <div class="container mt-5">
-<h1 class="mb-4">Manajemen Cast</h1>
-{{--<div class="table-container">--}}
+    <h1 class="mb-4">Manajemen Cast</h1>
     <div class="d-grid gap-2">
-        <button id="btn-add" class="btn btn-lg btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#castModal">Tambah data cast</button>
+        <button id="btn-add" class="btn btn-lg btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#castCreateModal">Tambah data cast</button>
     </div>
-
     <table class="table table-striped table-hover">
         <thead class="table-dark">
         <tr>
@@ -56,32 +56,42 @@
         </thead>
         <tbody>
         @foreach($casts as $cast)
-        <tr>
-            <td>{{ $cast['id'] }}</td>
-            <td>{{ $cast['name'] }}</td>
-            <td>{{ $cast['birth_date'] }}</td>
-            <td>{{ $cast['photo_url'] }}</td>
-            <td>{{ $cast['created_at'] }}</td>
-            <td>{{ $cast['updated_at'] }}</td>
-            <td>
-                <button type="button" class="btn btn-info btn-sm action-btn"
-                        data-bs-toggle="modal"
-                        data-bs-target="#genreModal">Edit</button>
+            <tr>
+                <td>{{ $cast['id'] }}</td>
+                <td>{{ $cast['name'] }}</td>
+                <td>{{ $cast['birth_date'] }}</td>
+                <td>
+                    <img src="{{ $cast['photo_url'] }}" alt="Foto Cast" style="max-height: 60px;">
+                </td>\\
+                <td>{{ $cast['created_at'] }}</td>
+                <td>{{ $cast['updated_at'] }}</td>
+                <td>
+                    <button type="button"
+                            class="btn btn-info btn-edit btn-sm action-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#castEditModal"
+                            data-id="{{ $cast['id'] }}"
+                            data-name="{{ $cast['name'] }}"
+                            data-dob="{{ $cast['birth_date'] }}">
+                        Edit</button>
 
-                <button class="btn btn-danger btn-sm action-btn">Hapus</button>
-            </td>
-        </tr>
+                    <form action="/casts/{{ $cast['id'] }}" method="POST" style="display:inline-block">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm action-btn"
+                                onclick="return confirm('Cast = {{$cast['name']}}, dengan id = {{$cast['id']}} akan dihapus')">Hapus</button>
+                    </form>
+                </td>
+            </tr>
         @endforeach
         </tbody>
     </table>
-{{--</div>--}}
 </div>
 
-<!-- Pop up gitulah -->
-<div class="modal fade" id="castModal" tabindex="-1" aria-labelledby="castModalLabel" aria-hidden="true">
+<div class="modal fade" id="castCreateModal" tabindex="-1" aria-labelledby="castModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="/casts/store" method="POST">
+            <form action="{{ route('casts.store') }}" method="POST">
 
                 @csrf
                 <div class="modal-header">
@@ -97,12 +107,12 @@
 
                     <div class="mb-3">
                         <label for="dob" class="form-label">Tanggal Lahir</label>
-                        <input type="date" class="form-control" id="dob" name="date_of_birth" required>
+                        <input type="date" class="form-control" id="edit-dob" name="date_of_birth">
                     </div>
 
                     <div class="mb-3">
-                        <label for="img_url" class="form-label">URL Gambar</label>
-                        <input type="file" class="form-control" id="img_url" name="img_url" accept="image/*">
+                        <label for="img" class="form-label">Foto</label>
+                        <input type="file" class="form-control" id="edit-photo" name="img" accept="image/*">
                     </div>
                 </div>
 
@@ -119,7 +129,7 @@
 <div class="modal fade" id="castEditModal" tabindex="-1" aria-labelledby="castEditModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="castEditForm" method="POST">
+            <form id="castEditForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="_method" value="PUT">
                 <div class="modal-header">
@@ -133,13 +143,13 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="edit-name" class="form-label">Tanggal lahir</label>
-                        <input type="date" class="form-control" id="edit-name" name="name" required>
+                        <label for="edit-dob" class="form-label">Tanggal lahir</label>
+                        <input type="date" class="form-control" id="edit-dob" name="date_of_birth" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="edit-name" class="form-label">Foto</label>
-                        <input type="file" class="form-control" id="edit-name" name="name" required>
+                        <label for="edit-photo" class="form-label">Foto</label>
+                        <input type="file" class="form-control" id="edit-photo" name="img">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -149,8 +159,28 @@
             </form>
         </div>
     </div>
+
 </div>
 </div>
 @include('footer')
 </body>
 </html>
+
+<script>
+    document.querySelectorAll('.btn-edit').forEach(button => {
+        button.addEventListener('click', function () {
+            const castId = this.getAttribute('data-id')
+            const castName = this.getAttribute('data-name')
+            const birthdate = this.getAttribute('data-dob')
+
+            const form = document.getElementById('castEditForm')
+            form.setAttribute('action', `/casts/${castId}`)
+
+            document.getElementById('edit-name').value = castName
+            document.getElementById('edit-dob').value = birthdate
+
+            const modal = new bootstrap.Modal(document.getElementById('castEditModal'));
+            modal.show();
+        });
+    });
+</script>
