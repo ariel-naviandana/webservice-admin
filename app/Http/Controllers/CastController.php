@@ -27,138 +27,55 @@ class CastController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'birth_date' => 'required|date',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'date_of_birth' => 'required|date',
+            'img' => 'nullable|image|max:2048',
         ]);
 
+        // Simulasikan upload image (jika ada)
+        $photoUrl = null;
+        if ($request->hasFile('img')) {
+            // Simulasi upload ke penyimpanan lokal/public
+            $photoUrl = $request->file('img')->store('images/casts', 'public');
+        }
+
         $data = [
-            'name' => $request->name,
-            'birth_date' => $request->birth_date,
+            'name' => $request->input('name'),
+            'birth_date' => $request->input('date_of_birth'),
+            'photo_url' => $photoUrl ? asset("storage/{$photoUrl}") : null,
         ];
 
-        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
-            try {
-                $cloudinaryUrl = 'https://api.cloudinary.com/v1_1/dto6d9tbe/image/upload';
-                $cloudinaryPreset = 'projek-tis';
-                $maxRetries = 3;
-                $retryDelay = 1000;
-
-                $cloudinaryResponse = null;
-                for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
-                    try {
-                        $cloudinaryResponse = Http::withOptions([
-                            'verify' => false,
-                            'timeout' => 30,
-                            'connect_timeout' => 10,
-                        ])->attach(
-                            'file',
-                            file_get_contents($request->file('photo')->getRealPath()),
-                            $request->file('photo')->getClientOriginalName()
-                        )->post($cloudinaryUrl, [
-                            'upload_preset' => $cloudinaryPreset,
-                            'folder' => 'cast_photos',
-                        ]);
-
-                        if ($cloudinaryResponse->successful()) {
-                            $data['photo_url'] = $cloudinaryResponse->json()['secure_url'];
-                            break;
-                        }
-                    } catch (\Exception $e) {
-                        if ($attempt === $maxRetries) {
-                            return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar: ' . $e->getMessage());
-                        }
-                        sleep($retryDelay / 1000);
-                    }
-                }
-
-                if (!$cloudinaryResponse->successful()) {
-                    return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar ke Cloudinary.');
-                }
-            } catch (\Exception $e) {
-                return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar: ' . $e->getMessage());
-            }
-        }
-
-        $token = Session::get('api_token');
-        $response = Http::withToken($token)->post("{$this->apiBaseUrl}/casts", $data);
+        $response = Http::post("{$this->apiBaseUrl}/casts", $data);
 
         if ($response->successful()) {
-            return redirect()->route('casts.index')->with('message', 'Berhasil ditambahkan.');
+            return redirect()->route('casts.index')->with('success', 'Berhasil menambahkan cast.');
+        } else {
+            return back()->with('error', 'Gagal menambahkan cast.')->withInput();
         }
-
-        return redirect()->route('casts.index')->with('message', 'Gagal menambahkan data: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'birth_date' => 'required|date',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'birthdate' => 'required|date',
         ]);
 
         $data = [
-            'name' => $request->name,
-            'birth_date' => $request->birth_date,
+            'name' => $request->input('name'),
+            'birth_date' => $request->input('birthdate'),
         ];
 
-        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
-            try {
-                $cloudinaryUrl = 'https://api.cloudinary.com/v1_1/dto6d9tbe/image/upload';
-                $cloudinaryPreset = 'projek-tis';
-                $maxRetries = 3;
-                $retryDelay = 1000;
-
-                $cloudinaryResponse = null;
-                for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
-                    try {
-                        $cloudinaryResponse = Http::withOptions([
-                            'verify' => false,
-                            'timeout' => 30,
-                            'connect_timeout' => 10,
-                        ])->attach(
-                            'file',
-                            file_get_contents($request->file('photo')->getRealPath()),
-                            $request->file('photo')->getClientOriginalName()
-                        )->post($cloudinaryUrl, [
-                            'upload_preset' => $cloudinaryPreset,
-                            'folder' => 'cast_photos',
-                        ]);
-
-                        if ($cloudinaryResponse->successful()) {
-                            $data['photo_url'] = $cloudinaryResponse->json()['secure_url'];
-                            break;
-                        }
-                    } catch (\Exception $e) {
-                        if ($attempt === $maxRetries) {
-                            return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar: ' . $e->getMessage());
-                        }
-                        sleep($retryDelay / 1000);
-                    }
-                }
-
-                if (!$cloudinaryResponse->successful()) {
-                    return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar ke Cloudinary.');
-                }
-            } catch (\Exception $e) {
-                return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar: ' . $e->getMessage());
-            }
-        }
-
-        $token = Session::get('api_token');
-        $response = Http::withToken($token)->put("{$this->apiBaseUrl}/casts/{$id}", $data);
+        $response = Http::put("{$this->apiBaseUrl}/casts/{$id}", $data);
 
         if ($response->successful()) {
-            return redirect()->route('casts.index')->with('message', 'Berhasil diupdate.');
+            return redirect()->route('casts.index')->with('success', 'Berhasil memperbarui data cast.');
+        } else {
+            return back()->with('error', 'Gagal memperbarui data cast.')->withInput();
         }
-
-        return redirect()->route('casts.index')->with('message', 'Gagal mengupdate data: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
-    public function destroy($id)
-    {
-        $token = Session::get('api_token');
-        $response = Http::withToken($token)->delete("{$this->apiBaseUrl}/casts/{$id}");
+    public function destroy($id){
+        $response = Http::delete("{$this->apiBaseUrl}/casts/{$id}");
 
         if ($response->successful()) {
             return redirect()->route('casts.index')->with('message', 'Berhasil dihapus.');
