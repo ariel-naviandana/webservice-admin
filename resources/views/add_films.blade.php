@@ -94,7 +94,7 @@
             <label class="form-label">Pilih Cast</label>
             @forelse ($casts as $cast)
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="cast_ids[]" id="cast_{{ $cast['id'] }}" value="{{ $genre['id'] }}" {{ in_array($cast['id'], old('cast_ids', [])) ? 'checked' : '' }}>
+                    <input class="form-check-input" type="checkbox" name="cast_ids[]" id="cast_{{ $cast['id'] }}" value="{{ $cast['id'] }}" {{ in_array($cast['id'], old('cast_ids', [])) ? 'checked' : '' }}>
                     <label class="form-check-label" for="cast_{{ $cast['id'] }}">{{ $cast['name'] }}</label>
                 </div>
             @empty

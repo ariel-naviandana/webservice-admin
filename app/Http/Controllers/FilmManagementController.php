@@ -111,11 +111,11 @@ class FilmManagementController extends Controller
         $token = Session::get('api_token');
         $response = Http::withToken($token)->post("{$this->apiBaseUrl}/films", $data);
 
-        if ($response->successful()) {
+        if ($response->status() === 201)
             return redirect()->route('films.index')->with('success', 'Film berhasil ditambahkan.');
-        }
+        else
+            return back()->with('error', 'Gagal menambahkan film: ' . ($response->json('message') ?? 'Unknown error'));
 
-        return back()->with('error', 'Gagal menambahkan film: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function update(Request $request, $id)
