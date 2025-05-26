@@ -8,6 +8,13 @@ use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
+    private $apiBaseUrl;
+
+    public function __construct()
+    {
+        $this->apiBaseUrl = env('API_BASE_URL');
+    }
+
     public function showLoginForm()
     {
         return view('login');
@@ -21,7 +28,7 @@ class AuthController extends Controller
         ]);
 
         try {
-            $response = Http::post("http://localhost:8000/api/login", [
+            $response = Http::post("{$this->apiBaseUrl}/login", [
                 'email' => $request->email,
                 'password' => $request->password,
             ]);

@@ -8,7 +8,12 @@ use Illuminate\Support\Facades\Session;
 
 class UsersManagementController extends Controller
 {
-    private $apiBaseUrl = 'http://localhost:8000/api';
+    private $apiBaseUrl;
+
+    public function __construct()
+    {
+        $this->apiBaseUrl = env('API_BASE_URL');
+    }
 
     public function index(Request $request)
     {

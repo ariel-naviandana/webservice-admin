@@ -9,7 +9,12 @@ use Illuminate\Support\Facades\Session;
 
 class FilmManagementController extends Controller
 {
-    private $apiBaseUrl = 'http://localhost:8000/api';
+    private $apiBaseUrl;
+
+    public function __construct()
+    {
+        $this->apiBaseUrl = env('API_BASE_URL');
+    }
 
     public function index()
     {
@@ -35,7 +40,7 @@ class FilmManagementController extends Controller
             'rating_avg' => 'nullable|numeric|min:0|max:10',
             'cast_ids' => 'array',
             'genre_ids' => 'array',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:4096',
         ]);
 
         $data = [
