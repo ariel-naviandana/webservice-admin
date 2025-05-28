@@ -3,30 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
-    <style>
-        body {
-            padding: 0px;
-            background-color: #f8f9fa;
-        }
-        .action-btn {
-            min-width: 70px;
-            height: 30px;
-            padding: 2px 8px;
-            margin-bottom: 10px;
-            font-size: 0.875rem;
-        }
-        .table thead {
-            background-color: #343a40;
-            color: white;
-        }
-        .btn-sm {
-            padding: 2px 8px;
-            font-size: 0.875rem;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
     <title>Manajemen Cast</title>
+    <style>
+        body { padding: 0px; background-color: #f8f9fa; }
+        .action-btn { min-width: 70px; height: 30px; padding: 2px 8px; margin-bottom: 10px; font-size: 0.875rem; }
+        .table thead { background-color: #343a40; color: white; }
+        .btn-sm { padding: 2px 8px; font-size: 0.875rem; }
+    </style>
 </head>
 <body>
 @include('navbar')
@@ -36,9 +21,22 @@
         <button id="btn-add" class="btn btn-lg btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#castModal">Tambah data cast</button>
     </div>
 
-    @if (session('message'))
-        <div class="alert {{ str_contains(session('message'), 'berhasil') ? 'alert-success' : 'alert-danger' }} mb-4">
-            {{ session('message') }}
+    @if(session('success'))
+        <div class="alert alert-success mb-4">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger mb-4">{{ session('error') }}</div>
+    @endif
+    @if(session('message'))
+        <div class="alert alert-info mb-4">{{ session('message') }}</div>
+    @endif
+    @if($errors->any())
+        <div class="alert alert-danger mb-4">
+            <ul class="mb-0">
+                @foreach($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
@@ -84,7 +82,6 @@
         </tbody>
     </table>
 </div>
-
 <!-- Modal Tambah Cast -->
 <div class="modal fade" id="castModal" tabindex="-1" aria-labelledby="castModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -117,7 +114,6 @@
         </div>
     </div>
 </div>
-
 <!-- Modal Edit Cast -->
 <div class="modal fade" id="castEditModal" tabindex="-1" aria-labelledby="castEditModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -152,7 +148,6 @@
         </div>
     </div>
 </div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const editModal = document.getElementById('castEditModal');
@@ -161,11 +156,8 @@
             const id = button.getAttribute('data-id');
             const name = button.getAttribute('data-name');
             const birth_date = button.getAttribute('data-birth_date');
-            const photo_url = button.getAttribute('data-photo_url');
-
             const form = document.getElementById('castEditForm');
             form.action = `/casts/${id}`;
-
             document.getElementById('edit-id').value = id;
             document.getElementById('edit-name').value = name;
             document.getElementById('edit-dob').value = birth_date;
