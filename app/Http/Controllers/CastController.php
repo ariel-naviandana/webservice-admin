@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
@@ -18,14 +19,21 @@ class CastController extends Controller
     public function index(Request $request)
     {
         $token = Session::get('api_token');
-        $response = Http::withToken($token)->get("{$this->apiBaseUrl}/casts");
+        try {
+            $response = Http::withToken($token)->get("{$this->apiBaseUrl}/casts");
 
-        if ($response->successful()) {
-            $casts = $response->json();
-            return view('cast', compact('casts'));
+            if ($response->successful()) {
+                $casts = $response->json();
+                return view('cast', compact('casts'));
+            }
+
+            $msg = $response->json('message') ?? 'Gagal memuat data.';
+            return view('cast')->with('error', $msg);
+        } catch (ConnectionException $e) {
+            return view('cast')->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return view('cast')->with('error', 'Terjadi kesalahan internal.');
         }
-
-        return view('cast')->with('message', 'Gagal memuat data.');
     }
 
     public function store(Request $request)
@@ -68,30 +76,40 @@ class CastController extends Controller
                             $data['photo_url'] = $cloudinaryResponse->json()['secure_url'];
                             break;
                         }
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
                         if ($attempt === $maxRetries) {
-                            return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar: ' . $e->getMessage());
+                            return redirect()->route('casts.index')->with('error', 'Gagal mengunggah gambar.');
                         }
                         sleep($retryDelay / 1000);
                     }
                 }
 
                 if (!$cloudinaryResponse->successful()) {
-                    return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar ke Cloudinary.');
+                    return redirect()->route('casts.index')->with('error', 'Gagal mengunggah gambar ke Cloudinary.');
                 }
-            } catch (\Exception $e) {
-                return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar: ' . $e->getMessage());
+            } catch (\Throwable $e) {
+                return redirect()->route('casts.index')->with('error', 'Gagal mengunggah gambar.');
             }
         }
 
         $token = Session::get('api_token');
-        $response = Http::withToken($token)->post("{$this->apiBaseUrl}/casts", $data);
+        try {
+            $response = Http::withToken($token)->post("{$this->apiBaseUrl}/casts", $data);
 
-        if ($response->successful()) {
-            return redirect()->route('casts.index')->with('message', 'Berhasil ditambahkan.');
+            if ($response->successful()) {
+                return redirect()->route('casts.index')->with('success', 'Berhasil ditambahkan.');
+            }
+
+            $msg = $response->json('message') ?? 'Gagal menambahkan data.';
+            if ($response->json('errors')) {
+                $msg .= ' '.collect($response->json('errors'))->flatten()->join(' ');
+            }
+            return redirect()->route('casts.index')->with('error', $msg);
+        } catch (ConnectionException $e) {
+            return redirect()->route('casts.index')->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return redirect()->route('casts.index')->with('error', 'Terjadi kesalahan internal.');
         }
-
-        return redirect()->route('casts.index')->with('message', 'Gagal menambahkan data: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function update(Request $request, $id)
@@ -134,41 +152,58 @@ class CastController extends Controller
                             $data['photo_url'] = $cloudinaryResponse->json()['secure_url'];
                             break;
                         }
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
                         if ($attempt === $maxRetries) {
-                            return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar: ' . $e->getMessage());
+                            return redirect()->route('casts.index')->with('error', 'Gagal mengunggah gambar.');
                         }
                         sleep($retryDelay / 1000);
                     }
                 }
 
                 if (!$cloudinaryResponse->successful()) {
-                    return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar ke Cloudinary.');
+                    return redirect()->route('casts.index')->with('error', 'Gagal mengunggah gambar ke Cloudinary.');
                 }
-            } catch (\Exception $e) {
-                return redirect()->route('casts.index')->with('message', 'Gagal mengunggah gambar: ' . $e->getMessage());
+            } catch (\Throwable $e) {
+                return redirect()->route('casts.index')->with('error', 'Gagal mengunggah gambar.');
             }
         }
 
         $token = Session::get('api_token');
-        $response = Http::withToken($token)->put("{$this->apiBaseUrl}/casts/{$id}", $data);
+        try {
+            $response = Http::withToken($token)->put("{$this->apiBaseUrl}/casts/{$id}", $data);
 
-        if ($response->successful()) {
-            return redirect()->route('casts.index')->with('message', 'Berhasil diupdate.');
+            if ($response->successful()) {
+                return redirect()->route('casts.index')->with('success', 'Berhasil diupdate.');
+            }
+
+            $msg = $response->json('message') ?? 'Gagal mengupdate data.';
+            if ($response->json('errors')) {
+                $msg .= ' '.collect($response->json('errors'))->flatten()->join(' ');
+            }
+            return redirect()->route('casts.index')->with('error', $msg);
+        } catch (ConnectionException $e) {
+            return redirect()->route('casts.index')->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return redirect()->route('casts.index')->with('error', 'Terjadi kesalahan internal.');
         }
-
-        return redirect()->route('casts.index')->with('message', 'Gagal mengupdate data: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function destroy($id)
     {
         $token = Session::get('api_token');
-        $response = Http::withToken($token)->delete("{$this->apiBaseUrl}/casts/{$id}");
+        try {
+            $response = Http::withToken($token)->delete("{$this->apiBaseUrl}/casts/{$id}");
 
-        if ($response->successful()) {
-            return redirect()->route('casts.index')->with('message', 'Berhasil dihapus.');
+            if ($response->successful()) {
+                return redirect()->route('casts.index')->with('success', 'Berhasil dihapus.');
+            }
+
+            $msg = $response->json('message') ?? 'Gagal menghapus data.';
+            return redirect()->route('casts.index')->with('error', $msg);
+        } catch (ConnectionException $e) {
+            return redirect()->route('casts.index')->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return redirect()->route('casts.index')->with('error', 'Terjadi kesalahan internal.');
         }
-
-        return redirect()->route('casts.index')->with('message', 'Gagal menghapus data: ' . ($response->json('message') ?? 'Unknown error'));
     }
 }
