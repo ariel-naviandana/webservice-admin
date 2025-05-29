@@ -10,10 +10,10 @@ use App\Http\Controllers\ReviewsManagementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Middleware\AdminAuth;
 
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login_form');
-Route::post('/login_process', [AuthController::class, 'loginProcess'])->name('login_process');
 
 Route::middleware(AdminAuth::class)->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login_form');
+    Route::post('/login_process', [AuthController::class, 'loginProcess'])->name('login_process');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/', [HomeController::class, 'index'])->name('home.index');
