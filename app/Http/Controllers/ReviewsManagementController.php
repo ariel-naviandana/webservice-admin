@@ -2,41 +2,53 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
 class ReviewsManagementController extends Controller
 {
-    private $apiBase = 'http://localhost:8000/api';
+    private $apiBaseUrl;
+
+    public function __construct()
+    {
+        $this->apiBaseUrl = env('API_BASE_URL');
+    }
 
     public function index(Request $request)
     {
         $token = Session::get('api_token');
         $filmId = $request->query('film_id');
-        $reviews = Http::withToken($token)->get("{$this->apiBase}/reviews")->json();
-        $users = Http::withToken($token)->get("{$this->apiBase}/users")->json();
-        $films = Http::withToken($token)->get("{$this->apiBase}/films")->json();
+        try {
+            $reviews = Http::withToken($token)->get("{$this->apiBaseUrl}/reviews")->json();
+            $users = Http::withToken($token)->get("{$this->apiBaseUrl}/users")->json();
+            $films = Http::withToken($token)->get("{$this->apiBaseUrl}/films")->json();
 
-        if ($filmId) {
-            $reviews = array_filter($reviews, fn($review) => $review['film_id'] == $filmId);
-        }
-
-        $editingReview = null;
-        if ($request->has('edit_id')) {
-            $editId = $request->query('edit_id');
-            $response = Http::withToken($token)->get("{$this->apiBase}/reviews/{$editId}");
-            if ($response->successful()) {
-                $editingReview = $response->json();
+            if ($filmId) {
+                $reviews = array_filter($reviews, fn($review) => $review['film_id'] == $filmId);
             }
-        }
 
-        return view('reviews', [
-            'reviews' => $reviews,
-            'users' => $users,
-            'films' => $films,
-            'editingReview' => $editingReview
-        ]);
+            $editingReview = null;
+            if ($request->has('edit_id')) {
+                $editId = $request->query('edit_id');
+                $response = Http::withToken($token)->get("{$this->apiBaseUrl}/reviews/{$editId}");
+                if ($response->successful()) {
+                    $editingReview = $response->json();
+                }
+            }
+
+            return view('reviews', [
+                'reviews' => $reviews,
+                'users' => $users,
+                'films' => $films,
+                'editingReview' => $editingReview
+            ]);
+        } catch (ConnectionException $e) {
+            return view('reviews')->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return view('reviews')->with('error', 'Terjadi kesalahan internal.');
+        }
     }
 
     public function update(Request $request, $id)
@@ -48,28 +60,45 @@ class ReviewsManagementController extends Controller
         ]);
 
         $token = Session::get('api_token');
-        $response = Http::withToken($token)->put("{$this->apiBase}/reviews/{$id}", [
-            'rating' => $request->input('rating'),
-            'comment' => $request->input('comment'),
-            'is_critic' => $request->input('is_critic'),
-        ]);
+        try {
+            $response = Http::withToken($token)->put("{$this->apiBaseUrl}/reviews/{$id}", [
+                'rating' => $request->input('rating'),
+                'comment' => $request->input('comment'),
+                'is_critic' => $request->input('is_critic'),
+            ]);
 
-        if ($response->successful()) {
-            return redirect()->route('reviews.index')->with('message', 'Review berhasil diperbarui.');
+            if ($response->successful()) {
+                return redirect()->route('reviews.index')->with('success', 'Review berhasil diperbarui.');
+            }
+
+            $msg = $response->json('message') ?? 'Gagal memperbarui review.';
+            if ($response->json('errors')) {
+                $msg .= ' '.collect($response->json('errors'))->flatten()->join(' ');
+            }
+            return redirect()->route('reviews.index')->with('error', $msg);
+        } catch (ConnectionException $e) {
+            return redirect()->route('reviews.index')->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return redirect()->route('reviews.index')->with('error', 'Terjadi kesalahan internal.');
         }
-
-        return redirect()->route('reviews.index')->with('message', 'Gagal memperbarui review: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function destroy($id)
     {
         $token = Session::get('api_token');
-        $response = Http::withToken($token)->delete("{$this->apiBase}/reviews/{$id}");
+        try {
+            $response = Http::withToken($token)->delete("{$this->apiBaseUrl}/reviews/{$id}");
 
-        if ($response->successful()) {
-            return redirect()->route('reviews.index')->with('message', 'Review berhasil dihapus.');
+            if ($response->successful()) {
+                return redirect()->route('reviews.index')->with('success', 'Review berhasil dihapus.');
+            }
+
+            $msg = $response->json('message') ?? 'Gagal menghapus review.';
+            return redirect()->route('reviews.index')->with('error', $msg);
+        } catch (ConnectionException $e) {
+            return redirect()->route('reviews.index')->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return redirect()->route('reviews.index')->with('error', 'Terjadi kesalahan internal.');
         }
-
-        return redirect()->route('reviews.index')->with('message', 'Gagal menghapus review: ' . ($response->json('message') ?? 'Unknown error'));
     }
 }

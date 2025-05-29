@@ -2,12 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
+    private $apiBaseUrl;
+
+    public function __construct()
+    {
+        $this->apiBaseUrl = env('API_BASE_URL');
+    }
+
     public function showLoginForm()
     {
         return view('login');
@@ -21,7 +29,7 @@ class AuthController extends Controller
         ]);
 
         try {
-            $response = Http::post("http://localhost:8000/api/login", [
+            $response = Http::post("{$this->apiBaseUrl}/login", [
                 'email' => $request->email,
                 'password' => $request->password,
             ]);
@@ -32,7 +40,7 @@ class AuthController extends Controller
                 $token = $data['token'];
 
                 if ($user['role'] != 'admin') {
-                    return redirect()->route('login_form')->with('message', 'Anda tidak memiliki akses ke halaman ini.');
+                    return redirect()->route('login_form')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
                 }
 
                 Session::put('user_id', $user['id']);
@@ -43,17 +51,33 @@ class AuthController extends Controller
 
                 return redirect()->route('home.index');
             } else {
-                $error = $response->json('message') ?? 'Login gagal. Silakan coba lagi.';
-                return redirect()->route('login_form')->with('message', $error);
+                $msg = $response->json('message') ?? 'Login gagal. Silakan coba lagi.';
+                if ($response->json('errors')) {
+                    $msg .= ' '.collect($response->json('errors'))->flatten()->join(' ');
+                }
+                return redirect()->route('login_form')->with('error', $msg);
             }
-        } catch (\Exception $e) {
-            return redirect()->route('login_form')->with('message', 'Terjadi kesalahan: ' . $e->getMessage());
+        } catch (ConnectionException $e) {
+            return redirect()->route('login_form')->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return redirect()->route('login_form')->with('error', 'Terjadi kesalahan internal.');
         }
     }
 
     public function logout()
     {
-        Session::flush();
-        return redirect()->route('login_form')->with('message', 'Berhasil logout.');
+        try {
+            $response = Http::withToken(Session::get('api_token'))->post("{$this->apiBaseUrl}/logout");
+            if ($response->status() == 200) {
+                Session::flush();
+                return redirect()->route('login_form')->with('success', 'Berhasil logout.');
+            } else {
+                return redirect()->route('home.index')->with('error', 'Gagal logout. Silakan coba lagi.');
+            }
+        } catch (ConnectionException $e) {
+            return redirect()->route('home.index')->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return redirect()->route('home.index')->with('error', 'Terjadi kesalahan internal.');
+        }
     }
 }

@@ -7,70 +7,83 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
+@include('navbar')
 
-    @include('navbar')
+<div class="container mt-5">
+    <h1 class="mb-4">Manajemen Review</h1>
 
-    <div class="container mt-5">
-        <h1 class="mb-4">Manajemen Review</h1>
+    @if(request()->has('film_id'))
+        <div class="alert alert-secondary">
+            Menampilkan review untuk film:
+            <strong>
+                {{ collect($films)->firstWhere('id', request('film_id'))['title'] ?? 'Film tidak ditemukan' }}
+            </strong>
+            <a href="{{ route('reviews.index') }}" class="btn btn-sm btn-outline-secondary float-end">Lihat Semua Review</a>
+        </div>
+    @endif
 
-        @if(request()->has('film_id'))
-            <div class="alert alert-secondary">
-                Menampilkan review untuk film:
-                <strong>
-                    {{ collect($films)->firstWhere('id', request('film_id'))['title'] ?? 'Film tidak ditemukan' }}
-                </strong>
-                <a href="{{ route('reviews.index') }}" class="btn btn-sm btn-outline-secondary float-end">Lihat Semua Review</a>
-            </div>
-        @endif
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+    @if(session('message'))
+        <div class="alert alert-info">{{ session('message') }}</div>
+    @endif
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-        @if(session('message'))
-            <div class="alert alert-info">{{ session('message') }}</div>
-        @endif
-
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Film</th>
-                    <th>User</th>
-                    <th>Rating</th>
-                    <th>Komentar</th>
-                    <th>Is Critic</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($reviews as $review)
-                    <tr>
-                        <td>{{ $review['id'] }}</td>
-                        <td>
-                            {{ collect($films)->firstWhere('id', $review['film_id'])['title'] ?? 'N/A' }}
-                        </td>
-                        <td>
-                            {{ collect($users)->firstWhere('id', $review['user_id'])['name'] ?? 'N/A' }}
-                        </td>
-                        <td>{{ $review['rating'] }}</td>
-                        <td>{{ $review['comment'] }}</td>
-                        <td>{{ $review['is_critic'] ? 'Yes' : 'No' }}</td>
-                        <td>
-                            <a href="{{ route('reviews.index', ['edit_id' => $review['id']]) }}" class="btn btn-sm btn-primary">Detail</a>
-                            <form action="/reviews/{{ $review['id'] }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus review ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="text-center text-muted">Tidak ada review ditemukan.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    @if(isset($editingReview))
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Film</th>
+            <th>User</th>
+            <th>Rating</th>
+            <th>Komentar</th>
+            <th>Is Critic</th>
+            <th>Aksi</th>
+        </tr>
+        </thead>
+        <tbody>
+        @forelse($reviews as $review)
+            <tr>
+                <td>{{ $review['id'] }}</td>
+                <td>
+                    {{ collect($films)->firstWhere('id', $review['film_id'])['title'] ?? 'N/A' }}
+                </td>
+                <td>
+                    {{ collect($users)->firstWhere('id', $review['user_id'])['name'] ?? 'N/A' }}
+                </td>
+                <td>{{ $review['rating'] }}</td>
+                <td>{{ $review['comment'] }}</td>
+                <td>{{ $review['is_critic'] ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ route('reviews.index', ['edit_id' => $review['id']]) }}" class="btn btn-sm btn-primary">Detail</a>
+                    <form action="/reviews/{{ $review['id'] }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus review ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                    </form>
+                </td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="7" class="text-center text-muted">Tidak ada review ditemukan.</td>
+            </tr>
+        @endforelse
+        </tbody>
+    </table>
+</div>
+@if(isset($editingReview))
     <div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form method="POST" action="{{ route('reviews.update', $editingReview['id']) }}">
@@ -114,16 +127,13 @@
             </form>
         </div>
     </div>
-
     <script>
         window.onload = function () {
             var modal = new bootstrap.Modal(document.getElementById('editReviewModal'));
             modal.show();
         };
     </script>
-    @endif
-
-    @include('footer')
-
+@endif
+@include('footer')
 </body>
 </html>

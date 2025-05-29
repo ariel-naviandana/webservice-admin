@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -9,19 +10,31 @@ use Illuminate\Support\Facades\Session;
 
 class FilmManagementController extends Controller
 {
-    private $apiBaseUrl = 'http://localhost:8000/api';
+    private $apiBaseUrl;
+
+    public function __construct()
+    {
+        $this->apiBaseUrl = env('API_BASE_URL');
+    }
 
     public function index()
     {
         $token = Session::get('api_token');
-        $response = Http::withToken($token)->get("{$this->apiBaseUrl}/films");
+        try {
+            $response = Http::withToken($token)->get("{$this->apiBaseUrl}/films");
 
-        if ($response->successful()) {
-            $films = $response->json();
-            return view('films', compact('films'));
+            if ($response->successful()) {
+                $films = $response->json();
+                return view('films', compact('films'));
+            }
+
+            $msg = $response->json('message') ?? 'Gagal memuat data.';
+            return view('films')->with('error', $msg);
+        } catch (ConnectionException $e) {
+            return view('films')->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return view('films')->with('error', 'Terjadi kesalahan internal.');
         }
-
-        return view('films')->with('error', 'Gagal memuat data.');
     }
 
     public function store(Request $request)
@@ -35,7 +48,7 @@ class FilmManagementController extends Controller
             'rating_avg' => 'nullable|numeric|min:0|max:10',
             'cast_ids' => 'array',
             'genre_ids' => 'array',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:4096',
         ]);
 
         $data = [
@@ -104,13 +117,23 @@ class FilmManagementController extends Controller
         }
 
         $token = Session::get('api_token');
-        $response = Http::withToken($token)->post("{$this->apiBaseUrl}/films", $data);
+        try {
+            $response = Http::withToken($token)->post("{$this->apiBaseUrl}/films", $data);
 
-        if ($response->successful()) {
-            return redirect()->route('films.index')->with('success', 'Film berhasil ditambahkan.');
+            if ($response->status() === 201)
+                return redirect()->route('films.index')->with('success', 'Film berhasil ditambahkan.');
+
+            $msg = $response->json('message') ?? 'Gagal menambahkan film.';
+            if ($response->json('errors')) {
+                $msg .= ' '.collect($response->json('errors'))->flatten()->join(' ');
+            }
+            return back()->with('error', $msg);
+
+        } catch (ConnectionException $e) {
+            return back()->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Terjadi kesalahan internal.');
         }
-
-        return back()->with('error', 'Gagal menambahkan film: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function update(Request $request, $id)
@@ -193,60 +216,92 @@ class FilmManagementController extends Controller
         }
 
         $token = Session::get('api_token');
-        $response = Http::withToken($token)->put("{$this->apiBaseUrl}/films/{$id}", $data);
+        try {
+            $response = Http::withToken($token)->put("{$this->apiBaseUrl}/films/{$id}", $data);
 
-        if ($response->successful()) {
-            return redirect()->route('films.index')->with('success', 'Film berhasil diperbarui.');
+            if ($response->successful()) {
+                return redirect()->route('films.index')->with('success', 'Film berhasil diperbarui.');
+            }
+
+            $msg = $response->json('message') ?? 'Gagal merubah film.';
+            if ($response->json('errors')) {
+                $msg .= ' '.collect($response->json('errors'))->flatten()->join(' ');
+            }
+            return back()->with('error', $msg);
+
+        } catch (ConnectionException $e) {
+            return back()->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Terjadi kesalahan internal.');
         }
-
-        return back()->with('error', 'Gagal merubah film: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function destroy($id)
     {
         $token = Session::get('api_token');
-        $response = Http::withToken($token)->delete("{$this->apiBaseUrl}/films/{$id}");
+        try {
+            $response = Http::withToken($token)->delete("{$this->apiBaseUrl}/films/{$id}");
 
-        if ($response->successful()) {
-            return redirect()->route('films.index')->with('success', 'Film berhasil dihapus.');
+            if ($response->successful()) {
+                return redirect()->route('films.index')->with('success', 'Film berhasil dihapus.');
+            }
+
+            $msg = $response->json('message') ?? 'Gagal menghapus film.';
+            return back()->with('error', $msg);
+        } catch (ConnectionException $e) {
+            return back()->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Terjadi kesalahan internal.');
         }
-
-        return back()->with('error', 'Gagal menghapus film: ' . ($response->json('message') ?? 'Unknown error'));
     }
 
     public function edit($id)
     {
         $token = Session::get('api_token');
-        $response = Http::withToken($token)->get("{$this->apiBaseUrl}/films/{$id}");
-        $responseCasts = Http::withToken($token)->get("{$this->apiBaseUrl}/casts");
-        $responseGenres = Http::withToken($token)->get("{$this->apiBaseUrl}/genres");
+        try {
+            $response = Http::withToken($token)->get("{$this->apiBaseUrl}/films/{$id}");
+            $responseCasts = Http::withToken($token)->get("{$this->apiBaseUrl}/casts");
+            $responseGenres = Http::withToken($token)->get("{$this->apiBaseUrl}/genres");
 
-        if ($response->successful()) {
-            $film = $response->json();
-            $filmCasts = collect($film['characters'])->sortBy('name')->values();
-            $filmGenres = collect($film['genres'])->sortBy('name')->values();
-            $filmCastIds = $filmCasts->pluck('id')->toArray();
-            $filmGenreIds = $filmGenres->pluck('id')->toArray();
-            $casts = collect($responseCasts->json())->sortBy('name')->values();
-            $genres = collect($responseGenres->json())->sortBy('name')->values();
-            return view('edit_films', compact('film', 'casts', 'genres', 'filmCasts', 'filmGenres', 'filmCastIds', 'filmGenreIds'));
+            if ($response->successful()) {
+                $film = $response->json();
+                $filmCasts = collect($film['characters'])->sortBy('name')->values();
+                $filmGenres = collect($film['genres'])->sortBy('name')->values();
+                $filmCastIds = $filmCasts->pluck('id')->toArray();
+                $filmGenreIds = $filmGenres->pluck('id')->toArray();
+                $casts = collect($responseCasts->json())->sortBy('name')->values();
+                $genres = collect($responseGenres->json())->sortBy('name')->values();
+                return view('edit_films', compact('film', 'casts', 'genres', 'filmCasts', 'filmGenres', 'filmCastIds', 'filmGenreIds'));
+            }
+
+            $msg = $response->json('message') ?? 'Gagal mengambil data film.';
+            return redirect()->route('films.index')->with('error', $msg);
+        } catch (ConnectionException $e) {
+            return redirect()->route('films.index')->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return redirect()->route('films.index')->with('error', 'Terjadi kesalahan internal.');
         }
-
-        return redirect()->route('films.index')->with('error', 'Gagal mengambil data film.');
     }
 
     public function add()
     {
         $token = Session::get('api_token');
-        $responseCasts = Http::withToken($token)->get("{$this->apiBaseUrl}/casts");
-        $responseGenres = Http::withToken($token)->get("{$this->apiBaseUrl}/genres");
+        try {
+            $responseCasts = Http::withToken($token)->get("{$this->apiBaseUrl}/casts");
+            $responseGenres = Http::withToken($token)->get("{$this->apiBaseUrl}/genres");
 
-        if ($responseCasts->successful() && $responseGenres->successful()) {
-            $casts = collect($responseCasts->json())->sortBy('name')->values();
-            $genres = collect($responseGenres->json())->sortBy('name')->values();
-            return view('add_films', compact('casts', 'genres'));
+            if ($responseCasts->successful() && $responseGenres->successful()) {
+                $casts = collect($responseCasts->json())->sortBy('name')->values();
+                $genres = collect($responseGenres->json())->sortBy('name')->values();
+                return view('add_films', compact('casts', 'genres'));
+            }
+
+            $msg = 'Gagal mengambil data.';
+            return redirect()->route('films.index')->with('error', $msg);
+        } catch (ConnectionException $e) {
+            return redirect()->route('films.index')->with('error', 'Tidak dapat terhubung ke server API.');
+        } catch (\Throwable $e) {
+            return redirect()->route('films.index')->with('error', 'Terjadi kesalahan internal.');
         }
-
-        return redirect()->route('films.index')->with('error', 'Gagal mengambil data.');
     }
 }

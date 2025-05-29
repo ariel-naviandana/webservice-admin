@@ -1,4 +1,3 @@
-    <!-- resources/views/users.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,57 +8,64 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
+@include('navbar')
+<div class="container mt-5">
+    <h1 class="mb-4">Manajemen User</h1>
 
-    <!-- Header -->
-    @include('navbar')
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+    @if(session('message'))
+        <div class="alert alert-info">{{ session('message') }}</div>
+    @endif
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-    <!-- Main Content -->
-    <div class="container mt-5">
-        <h1 class="mb-4">Manajemen User</h1>
-
-        @if(session('message'))
-            <div class="alert alert-info">
-                {{ session('message') }}
-            </div>
-        @endif
-
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Nama</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($users as $user)
-                    <tr>
-                        <td>{{ $user['id'] }}</td>
-                        <td>{{ $user['name'] }}</td>
-                        <td>{{ $user['email'] }}</td>
-                        <td>{{ $user['role'] }}</td>
-                        <td>
-                            <a href="{{ route('users.index', ['edit_id' => $user['id']]) }}" class="btn btn-sm btn-primary">Edit</a>
-                            <form  action="/users/{{ $user['id'] }}" method="POST"class="d-inline" onsubmit="return confirm('Yakin ingin menghapus user ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">Tidak ada user ditemukan.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Modal Edit User -->
-    @if(isset($editingUser))
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Aksi</th>
+        </tr>
+        </thead>
+        <tbody>
+        @forelse($users as $user)
+            <tr>
+                <td>{{ $user['id'] }}</td>
+                <td>{{ $user['name'] }}</td>
+                <td>{{ $user['email'] }}</td>
+                <td>{{ $user['role'] }}</td>
+                <td>
+                    <a href="{{ route('users.index', ['edit_id' => $user['id']]) }}" class="btn btn-sm btn-primary">Edit</a>
+                    <form  action="/users/{{ $user['id'] }}" method="POST"class="d-inline" onsubmit="return confirm('Yakin ingin menghapus user ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                    </form>
+                </td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="5" class="text-center text-muted">Tidak ada user ditemukan.</td>
+            </tr>
+        @endforelse
+        </tbody>
+    </table>
+</div>
+@if(isset($editingUser))
     <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form method="POST" action="{{ route('users.update', $editingUser['id']) }}">
@@ -96,16 +102,13 @@
             </form>
         </div>
     </div>
-
     <script>
         window.onload = function () {
             var myModal = new bootstrap.Modal(document.getElementById('editUserModal'));
             myModal.show();
         };
     </script>
-    @endif
-
-    <!-- Footer -->
-    @include('footer')
+@endif
+@include('footer')
 </body>
 </html>
